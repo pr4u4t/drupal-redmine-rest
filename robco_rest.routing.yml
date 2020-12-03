@@ -1,0 +1,21 @@
+robco_rest.command:
+  path: '/robco_rest/{command}'
+  defaults:
+    _controller: '\Drupal\robco_rest\Controller\RobcoRest::command'
+  requirements:
+    _permission: 'robco access cart+robco access products+robco access profile+robco access tickets'
+
+robco_rest.command_with_sub:
+  path: '/robco_rest/{command}/{sub}'
+  defaults:
+    _controller: '\Drupal\robco_rest\Controller\RobcoRest::command_with_sub'
+  requirements:
+    _permission: 'robco access cart+robco access products+robco access profile+robco access tickets'
+
+robco_rest.settings:
+  path: '/admin/config/development/robco_reset'
+  defaults:
+    _form: '\Drupal\robco_rest\Form\RobcoRestForm'
+    _title: 'RobCo REST API settings'
+  requirements:
+    _permission: 'administer site configuration'

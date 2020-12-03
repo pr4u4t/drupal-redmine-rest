@@ -1,0 +1,6 @@
+robco_rest.admin:
+  title: 'RobCo REST API settings'
+  description: 'Connection settings'
+  parent: system.admin_config_development
+  route_name: robco_rest.settings
+  weight: 100

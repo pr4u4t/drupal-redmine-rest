@@ -1,0 +1,13 @@
+robco_rest.settings:
+  type: config_object
+  label: 'RobCo REST API settings'
+  mapping:
+    robco_rest:
+      type: mapping
+      mapping:
+        host:
+          type: text
+          label: 'REST Host:'
+        api_key:
+          type: text
+          label: 'API key:'
