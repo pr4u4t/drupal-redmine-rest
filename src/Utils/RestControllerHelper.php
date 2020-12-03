@@ -51,7 +51,10 @@ class XsltHandler{
         $matches = array();
 
         if (!$this->validate($_POST['item']) || !$this->parse($_POST['item'],$matches)){
-            return array(400,"Failed to parse POST data");
+            return array(
+                'status'    => 400,
+                'content'   => "Failed to parse POST data"
+            );
         }   
 
         $data = (isset($matches[0])) ? (isset($matches[0][0])) ? $matches[0][0] : null : null;
@@ -69,11 +72,16 @@ class XsltHandler{
         			},
 			$ret);
 
-			
-			return array(200,$ret);
+			return array(
+                'status'    => 200,
+                'content'   => $ret
+            );
 
         }catch(Exception $e){
-            return array(500, $e->getMessage());
+            return array(
+                'status'    => 500, 
+                'content'   => $e->getMessage()
+            );
         }
 	}
 
@@ -85,11 +93,17 @@ class XsltHandler{
 		$matches = array();
 		
 		if(!isset($_GET['q']) || !is_string($_GET['q'])){
-			return array(400,"Failed to validate GET data");
+			return array(
+                'status'    => 400,
+                'content'   => "Failed to validate GET data"
+            );
 		}
         
         if(!preg_match('/(attachments\/)(download\/)([0-9]+)(\/.+)/', $_GET['q'], $matches) || count($matches) != 5){
-			return array(400,"Invalid GET parameters");
+			return array(
+                'status'    => 400,
+                'content'   => "Invalid GET parameters"
+            );
         }
 		
 		$options = array(
@@ -109,9 +123,15 @@ class XsltHandler{
         curl_setopt_array( $ch, $options );
         
         if(($data = curl_exec($ch)) === FALSE) {
-			$ret = array(500, curl_error( $ch ));
+			$ret = array(
+                'status'    => 500, 
+                'content'   => curl_error( $ch )
+            );
         }else{
-            $ret = array(200, $data);
+            $ret = array(
+                'status'    => 200, 
+                'content'   => $data
+            );
             $header  = curl_getinfo( $ch );
             if(isset($header["content_type"])){
                 $ret
