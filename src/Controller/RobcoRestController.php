@@ -9,34 +9,26 @@ use Drupal\Component\Utility\Html;
 
 namespace Drupal\robco_rest\Controller;
 
-
-
 class RobcoRestController extends ControllerBase {
   public function command($command, Request $request) {
+    return $this->handle($request, $command);
+  }
+  
+  public function command_with_sub($command, $sub, Request $request) {
+    return $this->handle($request, $command, $sub);
+  }
+  
+  private function handle(Request $request, $command, $sub = null){
     // Default settings.
     $config = \Drupal::config('robco_rest.settings');
     
     $host = $config->get('robco_rest.host');
     $apiKey = $config->get('robco_rest.api_key');
   
-    $handler = new XsltHandler($apiKey,$host);
-    $handler->handle($_SERVER['REQUEST_METHOD']);
+    $handler = new XsltHandler($apiKey,$host,$request->getSchemeAndHttpHost());
+    $ret = $handler->handle($request->getMethod());
   
-    
-  
-  
-    return array(
-      '#type' => 'markup',
-      '#markup' => t('Hello, World!'),
-    );
-  }
-  
-  public function command_with_sub($command, $sub, Request $request) {
-  
-  }
-  
-  public function image($image, Request $request){
-  
+    return new Response($ret['content'], $ret['status'], $ret['content_type']);
   }
   
 }

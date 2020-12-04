@@ -41,10 +41,16 @@ class XsltHandler{
 	}
 
 	protected function postHandler(){
+        $opts = array(
+            'site'  => $this->siteAddress(),
+            'rest'  => $this->hostAddress()
+        );
+	
 		if (!isset($_POST['item']) || !is_string($_POST['item'])) {
             return array(
-                'status'    => 400,
-                'content'   => "Failed to validate POST data"
+                'status'        => 400,
+                'content'       => "Failed to validate POST data",
+                'content_type'  => 'text/html'
             );
         }   
 
@@ -52,14 +58,14 @@ class XsltHandler{
 
         if (!$this->validate($_POST['item']) || !$this->parse($_POST['item'],$matches)){
             return array(
-                'status'    => 400,
-                'content'   => "Failed to parse POST data"
+                'status'        => 400,
+                'content'       => "Failed to parse POST data",
+                'content_type'  => 'text/html'
             );
         }   
 
         $data = (isset($matches[0])) ? (isset($matches[0][0])) ? $matches[0][0] : null : null;
         $tpl = (isset($matches[2])) ? (isset($matches[2][0])) ? $matches[2][0] : null : null;
-
 
 		try{
 			//php be damned why you don't support xslt 2.0 still better then webkit
@@ -67,20 +73,24 @@ class XsltHandler{
             $this->hostAddress()."/pages/".$tpl."xsl?key=".$this->apiKey());
 
 			$ret = preg_replace_callback('/(<img[ ]+(alt="[^"]+")*[ ]+src="https*:\/\/)(office.robco.pl\/)/',
-				function ($matches) {
-					return $matches[1]."bigdrip.pl/xslt.php?q=";
-        			},
+				function ($matches) use($opts) {
+                    
+				
+					return $matches[1]."bigdrip.pl"."/"."xslt.php?q=";
+                },
 			$ret);
 
 			return array(
-                'status'    => 200,
-                'content'   => $ret
+                'status'        => 200,
+                'content'       => $ret,
+                'content_type'  => 'text/html'
             );
 
         }catch(Exception $e){
             return array(
-                'status'    => 500, 
-                'content'   => $e->getMessage()
+                'status'        => 500, 
+                'content'       => $e->getMessage(),
+                'content_type'  => 'text/html'
             );
         }
 	}
@@ -94,15 +104,17 @@ class XsltHandler{
 		
 		if(!isset($_GET['q']) || !is_string($_GET['q'])){
 			return array(
-                'status'    => 400,
-                'content'   => "Failed to validate GET data"
+                'status'        => 400,
+                'content'       => "Failed to validate GET data",
+                'content_type'  => 'text/html'
             );
 		}
         
         if(!preg_match('/(attachments\/)(download\/)([0-9]+)(\/.+)/', $_GET['q'], $matches) || count($matches) != 5){
 			return array(
-                'status'    => 400,
-                'content'   => "Invalid GET parameters"
+                'status'        => 400,
+                'content'       => "Invalid GET parameters",
+                'content_type'  => 'text/html'
             );
         }
 		
@@ -124,8 +136,9 @@ class XsltHandler{
         
         if(($data = curl_exec($ch)) === FALSE) {
 			$ret = array(
-                'status'    => 500, 
-                'content'   => curl_error( $ch )
+                'status'        => 500, 
+                'content'       => curl_error($ch),
+                'content_type'  => 'text/html'
             );
         }else{
             $ret = array(
@@ -133,9 +146,7 @@ class XsltHandler{
                 'content'   => $data
             );
             $header  = curl_getinfo( $ch );
-            if(isset($header["content_type"])){
-                $ret
-            }
+            $ret['content_type'] = (isset($header['content_type'])) ? $header['content_type'] : null;
         }
 
         curl_close($ch);
