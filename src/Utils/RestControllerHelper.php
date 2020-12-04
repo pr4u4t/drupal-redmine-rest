@@ -5,11 +5,13 @@ class XsltHandler{
 	private $_hostAddr;
 	private $_transformator;
 	private $_siteAddress;
+	private $_userAgent;
 
-	public function __construct($apiKey, $hostAddr, $siteAddr){
+	public function __construct($apiKey, $hostAddr, $siteAddr,$agent = null){
 		$this->setApiKey($apiKey);
 		$this->setHostAddress($hostAddr);
 		$this->setSiteAddress($siteAddr);
+		$this->setUserAgent($agent);
 		$this->setXsltTransformator(new XSLTProcessor());
 	}
 
@@ -40,12 +42,70 @@ class XsltHandler{
         	return preg_match_all('/(([a-z]+)(\/([1-9][0-9]+)){0,1})/', $input,$matches);
 	}
 
+	protected function cart(){
+        if(!($tempstore = \Drupal::service('tempstore.private')->get('redmine_commerce'))){
+            return array(false,"Failed to get session storage");
+        }
+        
+        if(($ret = $tempstore->get('cart_id')) != null){
+            return array(true,$ret);
+        }
+        
+        $id = Drupal\Component\Utility\Random::string(16,true);
+        $id = "cart-$id";
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><deal><project_id>1</project_id><name>'.$id.'</name><contact_id>1</contact_id></deal>';
+        
+        $header = array(
+            "Content-type: text/xml",
+            "Content-length: " . strlen($xml),
+            "Connection: close"
+        );
+        
+        $options = array(
+            CURLOPT_POST            => true,
+            CURLOPT_URL             => $this->hostAddress()"/deals.xml?key=".$this->apiKey(),
+            CURLOPT_FOLLOWLOCATION  => true,
+            CURLOPT_RETURNTRANSFER  => true,
+            CURLOPT_USERAGENT       => $this->userAgent(),
+            CURLOPT_HEADER          => false,
+            CURLOPT_ENCODING        => "",
+            CURLOPT_AUTOREFERER     => true,
+            CURLOPT_CONNECTTIMEOUT  => 120,
+            CURLOPT_TIMEOUT         => 120,
+            CURLOPT_MAXREDIRS       => 10,
+            CURLOPT_POSTFIELDS      => $xml,
+            CURLOPT_HTTPHEADER      => $header
+		);
+
+        $ch = curl_init();
+        curl_setopt_array( $ch, $options );
+        
+        if(($data = curl_exec($ch)) === FALSE) {
+			$ret = array(
+                'status'        => 500, 
+                'content'       => curl_error($ch),
+                'content_type'  => 'text/plain'
+            );
+        }else{
+            $ret = array(
+                'status'    => 200, 
+                'content'   => $data
+            );
+            $header  = curl_getinfo( $ch );
+            $ret['content_type'] = (isset($header['content_type'])) ? $header['content_type'] : null;
+        }
+
+        curl_close($ch);
+        
+        $tempstore->set('cart_id', $id);
+	}
+	
 	protected function postHandler(){
         $siteInfo = array();
         $matches = array();
         $opts = array();
 	
-        if(!preg_match('/(https*:\/\/)(.+)/',$this->siteAddress() , $siteInfo) || count($siteInfo) != 3 ){
+        if(!preg_match('/(https*:\/\/)(.+)/',$this->siteAddress(), $siteInfo) || count($siteInfo) != 3 ){
             return array(
                 'status'        => 500,
                 'content'       => "Cannot obtain valid site address",
@@ -116,7 +176,6 @@ class XsltHandler{
 		
 		$ret = null;
         $data = null;
-        $user_agent='PHP/7.0 (LINUX; arch) Drupal/8.0';
 		$matches = array();
 		
 		if(!isset($_GET['q']) || !is_string($_GET['q'])){
@@ -139,7 +198,7 @@ class XsltHandler{
             CURLOPT_URL             => $this->hostAddress()"/".$matches[1].$matches[2].$matches[3]."?key=".$this->apiKey(),
             CURLOPT_FOLLOWLOCATION  => true,
             CURLOPT_RETURNTRANSFER  => true,
-            CURLOPT_USERAGENT       => $user_agent,
+            CURLOPT_USERAGENT       => $this->userAgent(),
             CURLOPT_HEADER          => false,
             CURLOPT_ENCODING        => "",
             CURLOPT_AUTOREFERER     => true,
@@ -203,4 +262,11 @@ class XsltHandler{
 			return $this->getHandler();
 	}
 
+    public function userAgent(){
+        return $this->_userAgent;
+    }
+    
+    public function setUserAgent($agent){
+        $this->_userAgent = $agent;
+    }
 }
