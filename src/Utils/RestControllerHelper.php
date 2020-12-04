@@ -41,20 +41,39 @@ class XsltHandler{
 	}
 
 	protected function postHandler(){
-        $opts = array(
-            'site'  => $this->siteAddress(),
-            'rest'  => $this->hostAddress()
-        );
+        $siteInfo = array();
+        $matches = array();
+        $opts = array();
 	
+        if(!preg_match('/(https*:\/\/)(.+)/',$this->siteAddress() , $siteInfo) || count($siteInfo) != 3 ){
+            return array(
+                'status'        => 500,
+                'content'       => "Cannot obtain valid site address",
+                'content_type'  => "text/plain"
+            );
+        }
+
+        $opts['site_protocol']  = $siteInfo[1];
+        $opts['site_address']   = $siteInfo[2];
+        
+        if(!preg_match('/(https*:\/\/)(.+)/', $this->hostAddress(), $siteInfo) || count($siteInfo) != 3 ){
+            return array(
+                'status'        => 500,
+                'content'       => "Cannot obtain valid REST endpoint address",
+                'content_type'  => "text/plain"
+            );
+        }
+        
+        $opts['rest_protocol']   = $siteInfo[1];
+        $opts['rest_address']    = $siteInfo[2];	
+
 		if (!isset($_POST['item']) || !is_string($_POST['item'])) {
             return array(
                 'status'        => 400,
                 'content'       => "Failed to validate POST data",
-                'content_type'  => 'text/html'
+                'content_type'  => 'text/plain'
             );
         }   
-
-        $matches = array();
 
         if (!$this->validate($_POST['item']) || !$this->parse($_POST['item'],$matches)){
             return array(
@@ -72,11 +91,9 @@ class XsltHandler{
             $ret = $this->transform($this->baseAddress()."/".$data.".xml?key=".$this->apiKey(),
             $this->hostAddress()."/pages/".$tpl."xsl?key=".$this->apiKey());
 
-			$ret = preg_replace_callback('/(<img[ ]+(alt="[^"]+")*[ ]+src="https*:\/\/)(office.robco.pl\/)/',
+			$ret = preg_replace_callback('/(<img[ ]+(alt="[^"]+")*[ ]+src="https*:\/\/)('.$opts['rest_address'].'\/)/',
 				function ($matches) use($opts) {
-                    
-				
-					return $matches[1]."bigdrip.pl"."/"."xslt.php?q=";
+					return $matches[1].$opts['site_address']."/robco_rest/";
                 },
 			$ret);
 
@@ -90,7 +107,7 @@ class XsltHandler{
             return array(
                 'status'        => 500, 
                 'content'       => $e->getMessage(),
-                'content_type'  => 'text/html'
+                'content_type'  => 'text/plain'
             );
         }
 	}
@@ -106,7 +123,7 @@ class XsltHandler{
 			return array(
                 'status'        => 400,
                 'content'       => "Failed to validate GET data",
-                'content_type'  => 'text/html'
+                'content_type'  => 'text/plain'
             );
 		}
         
@@ -114,7 +131,7 @@ class XsltHandler{
 			return array(
                 'status'        => 400,
                 'content'       => "Invalid GET parameters",
-                'content_type'  => 'text/html'
+                'content_type'  => 'text/plain'
             );
         }
 		
@@ -138,7 +155,7 @@ class XsltHandler{
 			$ret = array(
                 'status'        => 500, 
                 'content'       => curl_error($ch),
-                'content_type'  => 'text/html'
+                'content_type'  => 'text/plain'
             );
         }else{
             $ret = array(
