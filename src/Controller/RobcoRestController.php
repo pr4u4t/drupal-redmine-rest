@@ -21,12 +21,17 @@ class RobcoRestController extends ControllerBase {
   private function handle(Request $request, $command, $sub = null){
     // Default settings.
     $config = \Drupal::config('robco_rest.settings');
-    
-    $host = $config->get('robco_rest.host');
-    $apiKey = $config->get('robco_rest.api_key');
   
-    $handler = new XsltHandler($apiKey,$host,$request->getSchemeAndHttpHost());
-    $ret = $handler->handle($request->getMethod());
+    $xsltOpts = array(
+        'api_key'       => $config->get('robco_rest.api_key'),
+        'host'          => $config->get('robco_rest.host'),
+        'project_id'    => $config->get('robco_rest.commerce_project_id'),
+        'site'          => $request->getSchemeAndHttpHost(),
+        'method'        => $request->getMethod()
+    );
+  
+    $handler = new XsltHandler($xsltOpts);
+    $ret = $handler->handle();
   
     return new Response($ret['content'], $ret['status'], $ret['content_type']);
   }

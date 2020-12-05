@@ -11,3 +11,6 @@ robco_rest.settings:
         api_key:
           type: text
           label: 'API key:'
+        commerce_project_id:
+          type: text
+          label: 'Commerce project ID'

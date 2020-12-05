@@ -23,14 +23,15 @@ class RobcoRestForm extends ConfigFormBase {
     // Default settings.
     $config = $this->config('robco_rest.settings');
     
-    // Page title field.
+    // REST endpoint address.
     $form['host'] = [
       '#type' => 'textfield',
       '#title' => $this->t('REST host address:'),
       '#default_value' => $config->get('robco_rest.host'),
       '#description' => $this->t('Set address of REST endpoint.'),
     ];
-    // Source text field.
+    
+    // REST API key.
     $form['api_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('API key:'),
@@ -38,6 +39,14 @@ class RobcoRestForm extends ConfigFormBase {
       '#description' => $this->t('Set API key for REST endpoint'),
     ];
 
+    // Commerce project ID.
+    $form['commarce_project_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Commerce project ID:'),
+      '#default_value' => $config->get('robco_rest.commerce_project_id'),
+      '#description' => $this->t('Redmine e-commerce project ID'),
+    ];
+    
     return $form;
   }
   
@@ -55,6 +64,7 @@ class RobcoRestForm extends ConfigFormBase {
     $config = $this->config('robco_rest.settings');
     $config->set('robco_rest.host', $form_state->getValue('host'));
     $config->set('robco_rest.api_key', $form_state->getValue('api_key'));
+    $config->set('robco_rest.commerce_project_id', $form_state->getValue('commerce_project_id'));
     $config->save();
     return parent::submitForm($form, $form_state);
   }

@@ -6,24 +6,35 @@ class XsltHandler{
 	private $_transformator;
 	private $_siteAddress;
 	private $_userAgent;
+	private $_method;
+	private $_projectID;
 
-	public function __construct($apiKey, $hostAddr, $siteAddr,$agent = null){
-		$this->setApiKey($apiKey);
-		$this->setHostAddress($hostAddr);
-		$this->setSiteAddress($siteAddr);
-		$this->setUserAgent($agent);
+	public function __construct(array $opts){
+        if(isset($opts['api_key'])){
+            $this->setApiKey($opts['api_key']);
+        }
+        
+        if(isset($opts['host'])){
+            $this->setHostAddress($opts['host']);
+        }
+        
+        if(isset($opts['site'])){
+            $this->setSiteAddress($opts['site']);
+        }
+        
+        if(isset($opts['method'])){
+            $this->setMethod($opts['method']);
+        }
+        
+        if(isset($opts['project_id'])){
+            $this->setProjectID($opts['project_id']);
+        }
+        
+        $this->setUserAgent((isset($opts['user_agent'])) ? $opts['user_agent'] : "DEFAULT");
 		$this->setXsltTransformator(new XSLTProcessor());
 	}
 
 	public function __destruct(){}
-
-	private function setXsltTransformator($trans){
-		$this->_transformator = $trans;
-	}
-
-	private function xsltTransformator(){
-		return $this->_transformator;
-	}
 
 	protected function transform($xml, $xsl) {
 		if(!$this->xsltTransformator()){
@@ -42,6 +53,22 @@ class XsltHandler{
         	return preg_match_all('/(([a-z]+)(\/([1-9][0-9]+)){0,1})/', $input,$matches);
 	}
 
+	public function handle(){
+        if(!$this->host() || !$this->apiKey() || !$this->siteAddress() || !$this->projectID()){
+                return array(500,'Incomplete settings','text/plain');
+        }
+        
+        if($this->method() == "POST"){
+			return $this->postHandler();
+        }
+        
+		if($this->method() == "GET"){
+			return $this->getHandler();
+        }
+        
+        return array(500,'Unprocessable request','text/plain');
+	}	
+	
 	protected function cart(){
         if(!($tempstore = \Drupal::service('tempstore.private')->get('redmine_commerce'))){
             return array(false,"Failed to get session storage");
@@ -98,6 +125,14 @@ class XsltHandler{
         curl_close($ch);
         
         $tempstore->set('cart_id', $id);
+	}
+	
+	protected function addCartItem(){
+        return array(200,'Not implemented','text/plain');
+	}
+	
+	protected function removeCartItem(){
+        return array(200,'Not implemented','text/plain');
 	}
 	
 	protected function postHandler(){
@@ -253,14 +288,6 @@ class XsltHandler{
 	public function setSiteAddress($site){
         $this->_siteAddress = $site;
 	}
-	
-	public function handle($method){
-        if($method == "POST")
-			return $this->postHandler();	
-
-		if($method == "GET")
-			return $this->getHandler();
-	}
 
     public function userAgent(){
         return $this->_userAgent;
@@ -269,4 +296,28 @@ class XsltHandler{
     public function setUserAgent($agent){
         $this->_userAgent = $agent;
     }
+    
+    public function method(){
+        return $this->_method;
+    }
+    
+    public function setMethod($method){
+        $this->_method = $method;
+    }
+    
+    public function projectID(){
+        return $this->_projectID;
+    }
+    
+    public function setProjectID($id){
+        $this->_projectID = $id;
+    }
+    
+    private function setXsltTransformator($trans){
+		$this->_transformator = $trans;
+	}
+
+	private function xsltTransformator(){
+		return $this->_transformator;
+	}
 }
