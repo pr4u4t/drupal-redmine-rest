@@ -9,9 +9,9 @@ function loremipsum_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     case 'help.page.robco_rest':
       return t('
-        <h2>Lorem ipsum generator for Drupal.</h2>
+        <h2>RobCo integration of drupal and redmine</h2>
         <h3>Instructions</h3>
-        <p>Lorem ipsum dolor sit amet... <strong>Just kidding!</strong></p>
+        <p>This module provides integration of <strong>Drupal</strong> and <strong>Redmine</strong></p>
         <p>Unpack in the <em>modules</em> folder (currently in the root of your Drupal 8 installation) and enable in <strong>/admin/modules</strong>.</p>
         <p>Then, visit <strong>/admin/config/development/loremipsum</strong> and enter your own set of phrases to build random-generated text (or go with the default Lorem ipsum).</p>
         <p>Last, visit <strong>www.example.com/loremipsum/generate/P/S</strong> where:</p>

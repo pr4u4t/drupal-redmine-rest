@@ -10,15 +10,27 @@ use Drupal\Component\Utility\Html;
 namespace Drupal\robco_rest\Controller;
 
 class RobcoRestController extends ControllerBase {
+  
+  /* -- POST handler -- */
   public function command($command, Request $request) {
     return $this->handle($request, $command);
   }
   
-  public function command_with_sub($command, $sub, Request $request) {
-    return $this->handle($request, $command, $sub);
+  /* -- GET handler -- */
+  public function command_with_args($command, $arg1, $arg2, $arg3, $arg4, Request $request) {
+    
+    $args = array(
+        $arg1,
+        $arg2,
+        $arg3,
+        $arg4
+    );
+    
+    return $this->handle($request, $command, $args);
   }
   
-  private function handle(Request $request, $command, $sub = null){
+  /* -- Handle all type of request -- */
+  private function handle(Request $request, $command, array $args = array()){
     // Default settings.
     $config = \Drupal::config('robco_rest.settings');
   
@@ -31,9 +43,8 @@ class RobcoRestController extends ControllerBase {
     );
   
     $handler = new XsltHandler($xsltOpts);
-    $ret = $handler->handle();
+    $ret = $handler->handle($command,$args);
   
     return new Response($ret['content'], $ret['status'], $ret['content_type']);
   }
-  
 }

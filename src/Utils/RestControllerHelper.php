@@ -9,7 +9,12 @@ class XsltHandler{
 	private $_method;
 	private $_projectID;
 
+	private $_postCallbacks;
+	private $_getCallbacks;
+	
 	public function __construct(array $opts){
+        $this->_postCallbacks = array();
+	
         if(isset($opts['api_key'])){
             $this->setApiKey($opts['api_key']);
         }
@@ -32,6 +37,23 @@ class XsltHandler{
         
         $this->setUserAgent((isset($opts['user_agent'])) ? $opts['user_agent'] : "DEFAULT");
 		$this->setXsltTransformator(new XSLTProcessor());
+		
+		//set POST command callbacks
+		$this->setPostCallback('showCart',array($this,showCart));
+		$this->setPostCallback('addCartItem',array($this,addCartItem));
+		$this->setPostCallback('removeCartItem',array($this,removeCartItem));
+		$this->setPostCallback('showProfile',array($this,showProfile));
+		$this->setPostCallback('updateProfile',array($this,updateProfile));
+		$this->setPostCallback('showTickets',array($this,showTickets));
+		$this->setPostCallback('updateTicket',array($this,updateTicket));
+		$this->setPostCallback('addTicket',array($this,addTicket));
+		$this->setPostCallback('showProducts',array($this,showProducts));
+		$this->setPostCallback('showProduct',array($this,showProduct));
+        $this->setPostCallback('showOrders',array($this,showOrders));
+		$this->setPostCallback('showOrder',array($this,showOrder));
+		
+		//set GET url callbacks
+		
 	}
 
 	public function __destruct(){}
@@ -53,23 +75,28 @@ class XsltHandler{
         	return preg_match_all('/(([a-z]+)(\/([1-9][0-9]+)){0,1})/', $input,$matches);
 	}
 
-	public function handle(){
+	public function handle($command, array $args = array()){
+	
         if(!$this->host() || !$this->apiKey() || !$this->siteAddress() || !$this->projectID()){
-                return array(500,'Incomplete settings','text/plain');
+            return array(500,'Incomplete settings','text/plain');
         }
         
-        if($this->method() == "POST"){
-			return $this->postHandler();
+        if(!$command || !$sub){
+            return array(500,'Invalid request','text/plain');
         }
         
-		if($this->method() == "GET"){
-			return $this->getHandler();
+        switch($this->method()){
+            case "POST":
+                return $this->postHandler();
+                
+            case "GET":
+                return $this->getHandler($args);
         }
         
         return array(500,'Unprocessable request','text/plain');
 	}	
 	
-	protected function cart(){
+	protected function showCart(){
         if(!($tempstore = \Drupal::service('tempstore.private')->get('redmine_commerce'))){
             return array(false,"Failed to get session storage");
         }
@@ -128,11 +155,64 @@ class XsltHandler{
 	}
 	
 	protected function addCartItem(){
-        return array(200,'Not implemented','text/plain');
+        return array(200,'Not implemented yet','text/plain');
 	}
 	
 	protected function removeCartItem(){
-        return array(200,'Not implemented','text/plain');
+        return array(200,'Not implemented yet','text/plain');
+	}
+	
+	protected function showProfile(){
+        return array(200,'Not implemented yet','text/plain');
+	}
+	
+	protected function updateProfile(){
+        return array(200,'Not implemented yet','text/plain');
+	}
+	
+	protected function showTickets(){
+        return array(200,'Not implemented yet','text/plain');
+	}
+	
+	protected function updateTicket(){
+        return array(200,'Not implemented yet','text/plain');
+	}
+	
+	protected function addTicket(){
+        return array(200,'Not implemented yet','text/plain');
+	}
+	
+	protected function showProducts(){
+        $data = (isset($matches[0])) ? (isset($matches[0][0])) ? $matches[0][0] : null : null;
+        $tpl = (isset($matches[2])) ? (isset($matches[2][0])) ? $matches[2][0] : null : null;
+		
+        //php be damned why you don't support xslt 2.0 still better then webkit
+        $ret = $this->transform($this->baseAddress()."/".$data.".xml?key=".$this->apiKey(),
+        $this->hostAddress()."/pages/".$tpl."xsl?key=".$this->apiKey());
+
+        $ret = preg_replace_callback('/(<img[ ]+(alt="[^"]+")*[ ]+src="https*:\/\/)('.$opts['rest_address'].'\/)/',
+            function ($matches) use($opts) {
+                return $matches[1].$opts['site_address']."/robco_rest/";
+            },
+        $ret);
+			
+        return array();
+	}
+	
+	protected function showProduct(){
+        return array(200,'Not implemented yet','text/plain');
+	}
+	
+	protected function showOrders(){
+        return array(200,'Not implemented yet','text/plain');
+	}
+	
+	protected function showOrder(){
+        return array(200,'Not implemented yet','text/plain');
+	}
+	
+	protected function order(){
+        return array(200,'Not implemented yet','text/plain');
 	}
 	
 	protected function postHandler(){
@@ -178,19 +258,8 @@ class XsltHandler{
             );
         }   
 
-        $data = (isset($matches[0])) ? (isset($matches[0][0])) ? $matches[0][0] : null : null;
-        $tpl = (isset($matches[2])) ? (isset($matches[2][0])) ? $matches[2][0] : null : null;
-
 		try{
-			//php be damned why you don't support xslt 2.0 still better then webkit
-            $ret = $this->transform($this->baseAddress()."/".$data.".xml?key=".$this->apiKey(),
-            $this->hostAddress()."/pages/".$tpl."xsl?key=".$this->apiKey());
-
-			$ret = preg_replace_callback('/(<img[ ]+(alt="[^"]+")*[ ]+src="https*:\/\/)('.$opts['rest_address'].'\/)/',
-				function ($matches) use($opts) {
-					return $matches[1].$opts['site_address']."/robco_rest/";
-                },
-			$ret);
+            //find right callback
 
 			return array(
                 'status'        => 200,
@@ -207,7 +276,7 @@ class XsltHandler{
         }
 	}
 
-	protected function getHandler(){
+	protected function getHandler($args){
 		
 		$ret = null;
         $data = null;
@@ -320,4 +389,19 @@ class XsltHandler{
 	private function xsltTransformator(){
 		return $this->_transformator;
 	}
+	
+	public function postCallback($command){
+        return (is_array($this->_callbacks)) ? (isset($this->_callbacks[$command])) ? : null : null;
+	}
+	
+	public function setPostCallback($command, $callback){
+        if($command == null || !is_string($command)){
+            return false;
+        }
+        
+        $this->_callbacks[$command] = $callback;
+        return true;
+	}
+	
+	public function getCallback($url)
 }
