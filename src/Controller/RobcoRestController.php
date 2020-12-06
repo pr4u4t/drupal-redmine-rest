@@ -11,13 +11,8 @@ namespace Drupal\robco_rest\Controller;
 
 class RobcoRestController extends ControllerBase {
   
-  /* -- POST handler -- */
-  public function command($command, Request $request) {
-    return $this->handle($request, $command);
-  }
   
-  /* -- GET handler -- */
-  public function command_with_args($command, $arg1, $arg2, $arg3, $arg4, Request $request) {
+  public function command($command, $arg1, $arg2, $arg3, $arg4, Request $request) {
     
     $args = array(
         $arg1,
@@ -29,7 +24,6 @@ class RobcoRestController extends ControllerBase {
     return $this->handle($request, $command, $args);
   }
   
-  /* -- Handle all type of request -- */
   private function handle(Request $request, $command, array $args = array()){
     // Default settings.
     $config = \Drupal::config('robco_rest.settings');
@@ -44,7 +38,7 @@ class RobcoRestController extends ControllerBase {
   
     $handler = new XsltHandler($xsltOpts);
     $ret = $handler->handle($command,$args);
-  
+    
     return new Response($ret['content'], $ret['status'], $ret['content_type']);
   }
 }
