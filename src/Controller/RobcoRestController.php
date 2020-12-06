@@ -36,8 +36,13 @@ class RobcoRestController extends ControllerBase {
         'method'        => $request->getMethod()
     );
   
-    $handler = new XsltHandler($xsltOpts);
-    $ret = $handler->handle($command,$args);
+    if(!($handler = new XsltHandler($xsltOpts))){
+        return new Response('Internal server error',500,'text/plain');
+    }
+    
+    if(!($ret = $handler->handle($command,$args)) || is_array($ret)){
+        return Response('Internal server error',500,'text/plain');
+    }
     
     return new Response($ret['content'], $ret['status'], $ret['content_type']);
   }
