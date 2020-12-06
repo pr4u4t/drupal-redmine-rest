@@ -14,6 +14,7 @@ class XsltHandler{
 	
 	public function __construct(array $opts){
         $this->_postCallbacks = array();
+        $this->_getCallbacks = array();
 	
         if(isset($opts['api_key'])){
             $this->setApiKey($opts['api_key']);
@@ -39,21 +40,21 @@ class XsltHandler{
 		$this->setXsltTransformator(new XSLTProcessor());
 		
 		//set POST command callbacks
-		$this->setPostCallback('showCart',array($this,showCart));
-		$this->setPostCallback('addCartItem',array($this,addCartItem));
-		$this->setPostCallback('removeCartItem',array($this,removeCartItem));
-		$this->setPostCallback('showProfile',array($this,showProfile));
-		$this->setPostCallback('updateProfile',array($this,updateProfile));
-		$this->setPostCallback('showTickets',array($this,showTickets));
-		$this->setPostCallback('updateTicket',array($this,updateTicket));
-		$this->setPostCallback('addTicket',array($this,addTicket));
-		$this->setPostCallback('showProducts',array($this,showProducts));
-		$this->setPostCallback('showProduct',array($this,showProduct));
-        $this->setPostCallback('showOrders',array($this,showOrders));
-		$this->setPostCallback('showOrder',array($this,showOrder));
+		$this->setPostCallback('showCart',array($this,'showCart'));
+		$this->setPostCallback('addCartItem',array($this,'addCartItem'));
+		$this->setPostCallback('removeCartItem',array($this,'removeCartItem'));
+		$this->setPostCallback('showProfile',array($this,'showProfile'));
+		$this->setPostCallback('updateProfile',array($this,'updateProfile'));
+		$this->setPostCallback('showTickets',array($this,'showTickets'));
+		$this->setPostCallback('updateTicket',array($this,'updateTicket'));
+		$this->setPostCallback('addTicket',array($this,'addTicket'));
+		$this->setPostCallback('showProducts',array($this,'showProducts'));
+		$this->setPostCallback('showProduct',array($this,'showProduct'));
+        $this->setPostCallback('showOrders',array($this,'showOrders'));
+		$this->setPostCallback('showOrder',array($this,'showOrder'));
 		
 		//set GET url callbacks
-		
+		$this->setGetCallback('//',array($this,'getImage'));
 	}
 
 	public function __destruct(){}
@@ -81,16 +82,16 @@ class XsltHandler{
             return array(500,'Incomplete settings','text/plain');
         }
         
-        if(!$command || !$sub){
+        if(!$command){
             return array(500,'Invalid request','text/plain');
         }
         
         switch($this->method()){
             case "POST":
-                return $this->postHandler();
+                return $this->postHandler($command,$args);
                 
             case "GET":
-                return $this->getHandler($args);
+                return $this->getHandler($command,$args);
         }
         
         return array(500,'Unprocessable request','text/plain');
@@ -215,7 +216,7 @@ class XsltHandler{
         return array(200,'Not implemented yet','text/plain');
 	}
 	
-	protected function postHandler(){
+	protected function postHandler($command,$args){
         $siteInfo = array();
         $matches = array();
         $opts = array();
@@ -276,7 +277,7 @@ class XsltHandler{
         }
 	}
 
-	protected function getHandler($args){
+	protected function getHandler($command,$args){
 		
 		$ret = null;
         $data = null;
@@ -403,5 +404,29 @@ class XsltHandler{
         return true;
 	}
 	
-	public function getCallback($url)
+	public function getCallback($url){
+        $matches = array();
+        $call = array(0,null);
+        
+        if(!$this->_getCallbacks || !is_array($this->_getCallbacks)){
+            return null;
+        }
+        
+        foreach($this->_getCallbacks as $regex => $callback){
+            if(!is_string($regex) || !preg_match($regex,$url,$matches)){
+                continue;
+            }
+            
+            if(count($matches[0]) > $call[0]){
+                $call[0] = count($matches[0]);
+                $call[1] = $callback;
+            }
+        }
+        
+        return $call[1];
+	}
+	
+	public function setGetCallback($regex, $callback){
+        $this->_getCallbacks[$regex] = $callback;
+	}
 }
