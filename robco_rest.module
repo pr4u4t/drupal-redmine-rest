@@ -5,7 +5,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 /**
  * Implements hook_help().
  */
-function loremipsum_help($route_name, RouteMatchInterface $route_match) {
+function robco_rest_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     case 'help.page.robco_rest':
       return t('
