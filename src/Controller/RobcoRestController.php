@@ -1,6 +1,7 @@
 <?php
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Controller\ControllerBase;
 
 /**
  * @file
