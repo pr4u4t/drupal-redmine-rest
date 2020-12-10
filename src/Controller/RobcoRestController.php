@@ -7,7 +7,7 @@ use Drupal\Component\Utility\Html;
  * Contains \Drupal\robco_rest\Controller\RobcoRestController.
  */
 
-namespace Drupal\robco_rest\Controller;
+namespace Drupal\robco_rest\Controller\RobcoRestController;
 
 class RobcoRestController extends ControllerBase {
   
