@@ -5,7 +5,7 @@
  * Contains \Drupal\robco_rest\Controller\RobcoRestController.
  */
 
-namespace Drupal\robco_rest\Controller\RobcoRestController;
+namespace Drupal\robco_rest\Controller;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
