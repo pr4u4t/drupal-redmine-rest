@@ -13,7 +13,7 @@ use Drupal\Core\Block\BlockBase;
  *   category = @Translation("Help Desk"),
  * )
  */
-class HelpDeskBlock extends BlockBase {
+class HelpDesk extends BlockBase {
 
   /**
    * {@inheritdoc}
