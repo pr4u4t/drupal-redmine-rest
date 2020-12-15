@@ -9,8 +9,8 @@ use Drupal\Core\Block\BlockBase;
  *
  * @Block(
  *   id = "redmine_cart_block",
- *   admin_label = @Translation("Help desk block"),
- *   category = @Translation("Help Desk"),
+ *   admin_label = @Translation("Redmine cart block"),
+ *   category = @Translation("Redmine Cart"),
  * )
  */
 class RedmineCart extends BlockBase {
