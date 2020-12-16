@@ -30,14 +30,14 @@ class RedmineCart extends BlockBase {
             </a>
             <ul id="redmine-cart" data-region="navigation_collapsible" class="dropdown-menu">
                  <li class="first last">   </li>
-            </div>
+            </ul>
         </li>
     </ul>';
     
     	
     return [
       '#markup' => $tag,
-      '#allowed_tags' => ['script', 'div', 'span', 'ul', 'li'],
+      '#allowed_tags' => ['script', 'div', 'span', 'ul', 'li', 'a'],
     ];
   } 
 }
