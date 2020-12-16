@@ -37,7 +37,7 @@ class RedmineCart extends BlockBase {
     	
     return [
       '#markup' => $tag,
-      '#allowed_tags' => ['script', 'div', 'span', 'ul', 'li', 'a'],
+      '#allowed_tags' => ['script', 'div', 'span', 'ul', 'li', 'a', 'i'],
     ];
   } 
 }
