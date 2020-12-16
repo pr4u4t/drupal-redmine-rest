@@ -23,7 +23,10 @@ class RedmineCart extends BlockBase {
     <ul class="menu menu--cart nav navbar-nav">
         <li class="expanded dropdown first last">
             <a href="/" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                Strona główna <span class="caret"></span>
+                <i class="fas fa-shopping-cart"></i>
+                <span class="redmine-cart-label"> Cart </span>
+                <span id="redmine-cart-item-count"></span>
+                <span class="caret"></span>
             </a>
             <ul id="redmine-cart" data-region="navigation_collapsible" class="dropdown-menu">
                  <li class="first last">   </li>
