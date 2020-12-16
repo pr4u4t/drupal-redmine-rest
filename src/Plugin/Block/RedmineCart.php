@@ -29,7 +29,9 @@ class RedmineCart extends BlockBase {
                 <span class="caret"></span>
             </a>
             <ul id="redmine-cart" data-region="navigation_collapsible" class="dropdown-menu">
-                 <li class="first last">Your cart is empty.</li>
+                 <li class="first last">
+                    <a style="pointer-events: none;">Your cart is empty.</a>
+                 </li>
             </ul>
         </li>
     </ul>';
