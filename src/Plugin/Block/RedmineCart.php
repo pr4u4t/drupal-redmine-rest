@@ -19,14 +19,17 @@ class RedmineCart extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    $tag = '<div class="dropdown">
-	<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		<i class="fas fa-shopping-cart"></i>
-	</button>
-	<div id="redmine-cart" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    		<script type="text/javascript"> </script>
-	</div>
-    </div>';
+    $tag = '<script type="text/javascript"> </script>
+    <ul class="menu menu--cart nav navbar-nav">
+        <li class="expanded dropdown first last">
+            <a href="/" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                Strona główna <span class="caret"></span>
+            </a>
+            <ul id="redmine-cart" data-region="navigation_collapsible" class="dropdown-menu">
+                 <li class="first last">   </li>
+            </div>
+        </li>
+    </ul>';
     
     	
     return [
