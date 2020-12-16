@@ -25,11 +25,11 @@ class RedmineCart extends BlockBase {
             <a href="/" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="redmine-cart-label"> Cart </span>
-                <span id="redmine-cart-item-count"></span>
+                <span id="redmine-cart-item-count">0</span>
                 <span class="caret"></span>
             </a>
             <ul id="redmine-cart" data-region="navigation_collapsible" class="dropdown-menu">
-                 <li class="first last">   </li>
+                 <li class="first last">Your cart is empty.</li>
             </ul>
         </li>
     </ul>';
