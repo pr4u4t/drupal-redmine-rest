@@ -77,7 +77,10 @@ class AddCart extends FieldPluginBase {
      });
      })();">Add to cart</a>';
      
-    return $tag;
+    return [
+        '#type' => 'inline_template',
+        '#template' => $tag
+    ];
   }
 
   /**

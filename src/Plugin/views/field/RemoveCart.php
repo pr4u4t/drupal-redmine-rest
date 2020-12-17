@@ -77,7 +77,10 @@ class RemoveCart extends FieldPluginBase {
      });
      })();">Remove from cart</a>';
      
-    return $tag;
+    return [
+        '#type' => 'inline_template',
+        '#template' => $tag
+    ];
   }
 
   /**
