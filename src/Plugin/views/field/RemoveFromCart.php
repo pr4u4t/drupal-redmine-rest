@@ -12,9 +12,9 @@ use Drupal\views\ViewExecutable;
  *
  * @ingroup views_field_handlers
  *
- * @ViewsField("add_to_cart_views_field")
+ * @ViewsField("remove_from_cart_views_field")
  */
-class AddToCartViewsField extends FieldPluginBase {
+class RemoveFromCartViewsField extends FieldPluginBase {
 
   /**
    * The current display.
