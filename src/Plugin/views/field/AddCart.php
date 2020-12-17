@@ -16,7 +16,7 @@ use Drupal\views\ResultRow;
  *
  * @ingroup views_field_handlers
  *
- * @ViewsField("AddCart")
+ * @ViewsField("add_cart")
  */
 class AddCart extends FieldPluginBase {
 

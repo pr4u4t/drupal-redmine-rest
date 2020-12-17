@@ -16,7 +16,7 @@ use Drupal\views\ResultRow;
  *
  * @ingroup views_field_handlers
  *
- * @ViewsField("RemoveCart")
+ * @ViewsField("remove_cart")
  */
 class RemoveCart extends FieldPluginBase {
 
