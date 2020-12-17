@@ -6,35 +6,23 @@ use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\ResultRow;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\ViewExecutable;
+use Drupal\Component\Utility\Xss;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\views\Render\ViewsRenderPipelineMarkup;
+use Drupal\views\ResultRow;
 
 /**
  * A handler to provide a field that is completely custom by the administrator.
  *
  * @ingroup views_field_handlers
  *
- * @ViewsField("remove_from_cart_views_field")
+ * @ViewsField("AddCart")
  */
-class RemoveFromCartViewsField extends FieldPluginBase {
+class AddCart extends FieldPluginBase {
 
   /**
-   * The current display.
-   *
-   * @var string
-   *   The current display of the view.
-   */
-  protected $currentDisplay;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
-    parent::init($view, $display, $options);
-    $this->currentDisplay = $view->current_display;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
+  * {@inheritdoc}
+  */
   public function usesGroupBy() {
     return FALSE;
   }
@@ -45,7 +33,7 @@ class RemoveFromCartViewsField extends FieldPluginBase {
   public function query() {
     // Do nothing -- to override the parent query.
   }
-
+  
   /**
    * {@inheritdoc}
    */
@@ -67,7 +55,7 @@ class RemoveFromCartViewsField extends FieldPluginBase {
     unset($form['alter']['help']['#states']);
     $form['#pre_render'][] = [$this, 'preRenderCustomForm'];
   }
-  
+ 
   /**
    * {@inheritdoc}
    */
@@ -76,11 +64,22 @@ class RemoveFromCartViewsField extends FieldPluginBase {
     $callbacks[] = 'preRenderCustomForm';
     return $callbacks;
   }
-  
+ 
   /**
    * {@inheritdoc}
    */
   public function render(ResultRow $values) {
+    /*<a href="#" class="btn btn-primary" onclick="(function(){
+        $.ajax({
+         url: "/robco_rest/addCartItem/",
+         context: document.body
+       }).done(function() {
+         
+     });
+     })();">Add to cart</a>
+     */
+  
+  
     return ViewsRenderPipelineMarkup::create(Xss::filterAdmin($this->options['alter']['text']));
   }
 
@@ -101,4 +100,20 @@ class RemoveFromCartViewsField extends FieldPluginBase {
 
     return $form;
   }
+  
+   /**
+   * The current display.
+   *
+   * @var string
+   *   The current display of the view.
+   */
+  //protected $currentDisplay;
+
+  /**
+   * {@inheritdoc}
+   */
+  //public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  //  parent::init($view, $display, $options);
+  //  $this->currentDisplay = $view->current_display;
+  //}
 }
