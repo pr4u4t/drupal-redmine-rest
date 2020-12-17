@@ -77,10 +77,7 @@ class AddCart extends FieldPluginBase {
      });
      })();">Add to cart</a>';
      
-    return [
-      '#markup' => $tag,
-      '#allowed_tags' => ['script', 'div', 'span', 'ul', 'li', 'a', 'i'],
-    ];
+    return $tag;
   }
 
   /**

@@ -77,10 +77,7 @@ class RemoveCart extends FieldPluginBase {
      });
      })();">Remove from cart</a>';
      
-    return [
-      '#markup' => $tag,
-      '#allowed_tags' => ['script', 'div', 'span', 'ul', 'li', 'a', 'i'],
-    ];
+    return $tag;
   }
 
   /**
