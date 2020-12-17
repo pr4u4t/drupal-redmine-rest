@@ -68,18 +68,19 @@ class RemoveCart extends FieldPluginBase {
    * {@inheritdoc}
    */
   public function render(ResultRow $values) {
-    /*<a href="#" class="btn btn-primary" onclick="(function(){
+    $tag = '<a href="#" class="btn btn-primary" onclick="(function(){
         $.ajax({
          url: "/robco_rest/addCartItem/",
          context: document.body
        }).done(function() {
          
      });
-     })();">Add to cart</a>
-     */
-  
-  
-    return ViewsRenderPipelineMarkup::create(Xss::filterAdmin($this->options['alter']['text']));
+     })();">Remove from cart</a>';
+     
+    return [
+      '#markup' => $tag,
+      '#allowed_tags' => ['script', 'div', 'span', 'ul', 'li', 'a', 'i'],
+    ];
   }
 
   /**
