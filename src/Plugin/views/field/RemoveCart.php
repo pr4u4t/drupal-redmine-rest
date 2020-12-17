@@ -9,7 +9,6 @@ use Drupal\views\ViewExecutable;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Render\ViewsRenderPipelineMarkup;
-use Drupal\views\ResultRow;
 
 /**
  * A handler to provide a field that is completely custom by the administrator.
