@@ -73,6 +73,7 @@ class AddCart extends FieldPluginBase {
     //$items = array();
     ob_start();
     var_dump($this->options['field_types']);
+    var_dump($this->view->field[]->advancedRender($values););
     $val = ob_end_clean();
     syslog(LOG_ERR,$val);
     /*foreach ($this->options['field_types'] as $key => $value) {
