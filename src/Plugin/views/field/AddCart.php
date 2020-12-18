@@ -70,13 +70,16 @@ class AddCart extends FieldPluginBase {
    */
   public function render(ResultRow $values) {
   
-    $items = array();
-    
-    foreach ($this->options['field_types'] as $key => $value) {
+    //$items = array();
+    ob_start();
+    var_dump($this->options['field_types']);
+    syslog(LOG_ERR,$val);
+    $val = ob_end_clean();
+    /*foreach ($this->options['field_types'] as $key => $value) {
         if ($value != '0') {
             $items[] = $this->view->field[$key]->advancedRender($values);
         }
-    }
+    }*/
     
     
     $tag = '<a href="#" class="btn btn-primary" onclick="(function(){
