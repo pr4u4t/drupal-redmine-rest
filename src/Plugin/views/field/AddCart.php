@@ -51,13 +51,13 @@ class AddCart extends FieldPluginBase {
     $form['field_types'] = array(
         '#type' => 'radios',
         '#title' => $this->t('Which field contains product ID?'),
-        '#default_value' => 1,
+        '#default_value' => $this->options['field_types'],
         '#options' => $fields
     );
     
     /*array(
       '#title' => $this->t('Which fields should be included?'),
-      '#type' => 'radiobuttons',
+      '#type' => 'checkboxes',
       '#options' => $fields,
       '#default_value' => $this->options['field_types'],
     );*/
