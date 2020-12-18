@@ -38,31 +38,34 @@ class AddCart extends FieldPluginBase {
    */
   protected function defineOptions() {
     $options = parent::defineOptions();
-    
-    $options['alter']['contains']['alter_text'] = ['default' => TRUE];
-    $options['hide_alter_empty'] = ['default' => FALSE];
+    $options['field_types'] = ['default' => []];
     
     return $options;
   }
 
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
-    parent::buildOptionsForm($form, $form_state);
+    $fields = $this->displayHandler->getFieldLabels(TRUE);
+    $pos = array_search('dropdown_list', $fields);
+    unset($fields[$pos]);
 
-    // Remove the checkbox
-    unset($form['alter']['alter_text']);
-    unset($form['alter']['text']['#states']);
-    unset($form['alter']['help']['#states']);
-    $form['#pre_render'][] = [$this, 'preRenderCustomForm'];
+    $form['field_types'] = array(
+      '#title' => $this->t('Which fields should be included?'),
+      '#type' => 'checkboxes',
+      '#options' => $fields,
+      '#default_value' => $this->options['field_types'],
+    );
+    
+    parent::buildOptionsForm($form, $form_state);
   }
  
   /**
    * {@inheritdoc}
    */
-  public static function trustedCallbacks() {
+  /*public static function trustedCallbacks() {
     $callbacks = parent::trustedCallbacks();
     $callbacks[] = 'preRenderCustomForm';
     return $callbacks;
-  }
+  }*/
  
   /**
    * {@inheritdoc}
@@ -103,14 +106,14 @@ class AddCart extends FieldPluginBase {
    * @return array
    *   The modified form build array.
    */
-  public function preRenderCustomForm($form) {
+  /*public function preRenderCustomForm($form) {
     $form['text'] = $form['alter']['text'];
     $form['help'] = $form['alter']['help'];
     unset($form['alter']['text']);
     unset($form['alter']['help']);
 
     return $form;
-  }
+  }*/
   
    /**
    * The current display.
