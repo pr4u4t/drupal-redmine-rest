@@ -61,15 +61,6 @@ class AddCart extends FieldPluginBase {
   /**
    * {@inheritdoc}
    */
-  /*public static function trustedCallbacks() {
-    $callbacks = parent::trustedCallbacks();
-    $callbacks[] = 'preRenderCustomForm';
-    return $callbacks;
-  }*/
- 
-  /**
-   * {@inheritdoc}
-   */
   public function render(ResultRow $values) {
   
     $items = array();
@@ -78,6 +69,7 @@ class AddCart extends FieldPluginBase {
         if ($value != '0') {
             $items[] = $this->view->field[$key]->advancedRender($values);
             syslog(LOG_ERR,$key);
+            syslog(LOG_ERR,$items[0]);
         }
     }
     
@@ -96,38 +88,4 @@ class AddCart extends FieldPluginBase {
         '#template' => $tag
     ];
   }
-
-  /**
-   * Prerender function to move the textarea to the top of a form.
-   *
-   * @param array $form
-   *   The form build array.
-   *
-   * @return array
-   *   The modified form build array.
-   */
-  /*public function preRenderCustomForm($form) {
-    $form['text'] = $form['alter']['text'];
-    $form['help'] = $form['alter']['help'];
-    unset($form['alter']['text']);
-    unset($form['alter']['help']);
-
-    return $form;
-  }*/
-  
-   /**
-   * The current display.
-   *
-   * @var string
-   *   The current display of the view.
-   */
-  //protected $currentDisplay;
-
-  /**
-   * {@inheritdoc}
-   */
-  //public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
-  //  parent::init($view, $display, $options);
-  //  $this->currentDisplay = $view->current_display;
-  //}
 }
