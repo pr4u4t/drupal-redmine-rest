@@ -68,12 +68,18 @@ class AddCart extends FieldPluginBase {
    * {@inheritdoc}
    */
   public function render(ResultRow $values) {
+  
+    ob_start();
+    var_dump($values);
+    $value = ob_end_clean();
+    syslog(LOG_ERR,$value);
+    
     $tag = '<a href="#" class="btn btn-primary" onclick="(function(){
         $.ajax({
          url: "/robco_rest/addCartItem/",
          context: document.body
        }).done(function() {
-         
+         window.alert("ADD CLICKED");
      });
      })();">Add to cart</a>';
      
