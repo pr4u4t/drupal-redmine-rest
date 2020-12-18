@@ -49,11 +49,18 @@ class AddCart extends FieldPluginBase {
     unset($fields[$pos]);
 
     $form['field_types'] = array(
+        '#type' => 'radios',
+        '#title' => $this->t('Which field contains product ID?'),
+        '#default_value' => 1,
+        '#options' => $fields
+    );
+    
+    /*array(
       '#title' => $this->t('Which fields should be included?'),
-      '#type' => 'checkboxes',
+      '#type' => 'radiobuttons',
       '#options' => $fields,
       '#default_value' => $this->options['field_types'],
-    );
+    );*/
     
     parent::buildOptionsForm($form, $form_state);
   }
@@ -68,8 +75,6 @@ class AddCart extends FieldPluginBase {
     foreach ($this->options['field_types'] as $key => $value) {
         if ($value != '0') {
             $items[] = $this->view->field[$key]->advancedRender($values);
-            syslog(LOG_ERR,$key);
-            syslog(LOG_ERR,$items[0]);
         }
     }
     
