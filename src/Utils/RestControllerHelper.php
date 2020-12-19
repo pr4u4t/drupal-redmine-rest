@@ -1,6 +1,6 @@
 <?php
 
-
+namespace Drupal\robco_rest\Utils;
 
 class XsltHandler{
 	private $_apiKey;
