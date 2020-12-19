@@ -67,14 +67,15 @@ class AddCart extends FieldPluginBase {
         $value = $this->view->field[$this->options['field_radios']]->advancedRender($values);
     }
 
-    $tag = '<a href="#" class="btn btn-primary" onclick="(function(){
+    $tag = '<a href="#" class="btn btn-primary" onclick=\'(function(){
+        console.log("ADD CLICKED");
         $.ajax({
          url: "/robco_rest/addCartItem/'.$value.'",
          context: document.body
        }).done(function() {
-         window.alert("ADD CLICKED");
+         console.log("ADD FINISHED");
      });
-     })();">Add to cart</a>';
+     })();\'>Add to cart</a>';
 
     return [
         '#type' => 'inline_template',

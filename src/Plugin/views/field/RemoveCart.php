@@ -67,14 +67,15 @@ class RemoveCart extends FieldPluginBase {
         $value = $this->view->field[$this->options['field_radios']]->advancedRender($values);
     }
 
-    $tag = '<a href="#" class="btn btn-primary" onclick="(function(){
+    $tag = '<a href="#" class="btn btn-primary" onclick=\'(function(){
+        console.log("REMOVE CLICKED");
         $.ajax({
          url: "/robco_rest/delCartItem/'.$value.'",
          context: document.body
        }).done(function() {
-         window.alert("REMOVE CLICKED");
+         console.log("REMOVE FINISHED");
      });
-     })();">Remove from cart</a>';
+     })();\'>Remove from cart</a>';
 
     return [
         '#type' => 'inline_template',
