@@ -13,7 +13,7 @@ use Drupal\Core\Controller\ControllerBase;
 class RobcoRestController extends ControllerBase {
   
   
-  public function command($command, $arg1, $arg2, $arg3, $arg4, Request $request) {
+  public function command($command, Request $request, $arg1, $arg2, $arg3, $arg4) {
     
     $args = array(
         $arg1,

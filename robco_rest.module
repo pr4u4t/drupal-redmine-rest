@@ -32,7 +32,7 @@ phrases and it\'ll do the rest.</p>
 /**
  * Implements hook_views_data().
  */
-function custom_module_views_data() {
+/*function custom_module_views_data() {
   $data['views']['table']['group'] = t('Custom Global');
   $data['views']['table']['join'] = [
     // #global is a special flag which allows a table to appear all the time.
@@ -56,4 +56,4 @@ function custom_module_views_data() {
   ];
   
   return $data;
-}
+}*/
