@@ -120,7 +120,7 @@ class XsltHandler{
         
         $options = array(
             CURLOPT_POST            => true,
-            CURLOPT_URL             => $this->hostAddress()"/deals.xml?key=".$this->apiKey(),
+            CURLOPT_URL             => $this->hostAddress()."/deals.xml?key=".$this->apiKey(),
             CURLOPT_FOLLOWLOCATION  => true,
             CURLOPT_RETURNTRANSFER  => true,
             CURLOPT_USERAGENT       => $this->userAgent(),
@@ -302,7 +302,7 @@ class XsltHandler{
         }
 		
 		$options = array(
-            CURLOPT_URL             => $this->hostAddress()"/".$matches[1].$matches[2].$matches[3]."?key=".$this->apiKey(),
+            CURLOPT_URL             => $this->hostAddress()."/".$matches[1].$matches[2].$matches[3]."?key=".$this->apiKey(),
             CURLOPT_FOLLOWLOCATION  => true,
             CURLOPT_RETURNTRANSFER  => true,
             CURLOPT_USERAGENT       => $this->userAgent(),
