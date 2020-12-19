@@ -69,7 +69,7 @@ class AddCart extends FieldPluginBase {
 
     $tag = '<a href="#" class="btn btn-primary" onclick=\'(function(){
         console.log("ADD CLICKED");
-        $.ajax({
+        jQuery.ajax({
          url: "/robco_rest/addCartItem/'.$value.'",
          context: document.body
        }).done(function() {

@@ -69,7 +69,7 @@ class RemoveCart extends FieldPluginBase {
 
     $tag = '<a href="#" class="btn btn-primary" onclick=\'(function(){
         console.log("REMOVE CLICKED");
-        $.ajax({
+        jQuery.ajax({
          url: "/robco_rest/delCartItem/'.$value.'",
          context: document.body
        }).done(function() {
