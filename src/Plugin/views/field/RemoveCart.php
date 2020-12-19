@@ -15,7 +15,7 @@ use Drupal\views\Render\ViewsRenderPipelineMarkup;
  *
  * @ingroup views_field_handlers
  *
- * @ViewsField("remove_cart")
+ * @ViewsField("add_cart")
  */
 class RemoveCart extends FieldPluginBase {
 
@@ -36,84 +36,49 @@ class RemoveCart extends FieldPluginBase {
   /**
    * {@inheritdoc}
    */
-  protected function defineOptions() {
+   protected function defineOptions() {
     $options = parent::defineOptions();
-    
-    $options['alter']['contains']['alter_text'] = ['default' => TRUE];
-    $options['hide_alter_empty'] = ['default' => FALSE];
-    
+    $options['field_radios'] = [ 'default' => [] ];
     return $options;
   }
 
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
-    parent::buildOptionsForm($form, $form_state);
+    $fields = $this->displayHandler->getFieldLabels(TRUE);
+    $pos = array_search('dropdown_list', $fields);
+    unset($fields[$pos]);
 
-    // Remove the checkbox
-    unset($form['alter']['alter_text']);
-    unset($form['alter']['text']['#states']);
-    unset($form['alter']['help']['#states']);
-    $form['#pre_render'][] = [$this, 'preRenderCustomForm'];
+    $form['field_radios'] = array(
+        '#type' => 'radios',
+        '#title' => $this->t('Which field contains product ID?'),
+        '#default_value' => $this->options['field_radios'],
+        '#options' => $fields
+    );
+
+    parent::buildOptionsForm($form, $form_state);
   }
- 
-  /**
-   * {@inheritdoc}
-   */
-  public static function trustedCallbacks() {
-    $callbacks = parent::trustedCallbacks();
-    $callbacks[] = 'preRenderCustomForm';
-    return $callbacks;
-  }
- 
+
   /**
    * {@inheritdoc}
    */
   public function render(ResultRow $values) {
+
+    $value = 0;
+    if($this->options['field_radios'] && isset($this->view->field[$this->options['field_radios']])){
+        $value = $this->view->field[$this->options['field_radios']]->advancedRender($values);
+    }
+
     $tag = '<a href="#" class="btn btn-primary" onclick="(function(){
         $.ajax({
-         url: "/robco_rest/addCartItem/",
+         url: "/robco_rest/delCartItem/'.$value.'",
          context: document.body
        }).done(function() {
-         
+         window.alert("REMOVE CLICKED");
      });
      })();">Remove from cart</a>';
-     
+
     return [
         '#type' => 'inline_template',
         '#template' => $tag
     ];
   }
-
-  /**
-   * Prerender function to move the textarea to the top of a form.
-   *
-   * @param array $form
-   *   The form build array.
-   *
-   * @return array
-   *   The modified form build array.
-   */
-  public function preRenderCustomForm($form) {
-    $form['text'] = $form['alter']['text'];
-    $form['help'] = $form['alter']['help'];
-    unset($form['alter']['text']);
-    unset($form['alter']['help']);
-
-    return $form;
-  }
-  
-   /**
-   * The current display.
-   *
-   * @var string
-   *   The current display of the view.
-   */
-  //protected $currentDisplay;
-
-  /**
-   * {@inheritdoc}
-   */
-  //public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
-  //  parent::init($view, $display, $options);
-  //  $this->currentDisplay = $view->current_display;
-  //}
 }

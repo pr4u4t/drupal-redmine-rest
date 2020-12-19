@@ -36,10 +36,9 @@ class AddCart extends FieldPluginBase {
   /**
    * {@inheritdoc}
    */
-  protected function defineOptions() {
+   protected function defineOptions() {
     $options = parent::defineOptions();
-    $options['field_types'] = ['default' => []];
-    
+    $options['field_radios'] = [ 'default' => [] ];
     return $options;
   }
 
@@ -48,50 +47,35 @@ class AddCart extends FieldPluginBase {
     $pos = array_search('dropdown_list', $fields);
     unset($fields[$pos]);
 
-    $form['field_types'] = array(
+    $form['field_radios'] = array(
         '#type' => 'radios',
         '#title' => $this->t('Which field contains product ID?'),
-        '#default_value' => $this->options['field_types'],
+        '#default_value' => $this->options['field_radios'],
         '#options' => $fields
     );
-    
-    /*array(
-      '#title' => $this->t('Which fields should be included?'),
-      '#type' => 'checkboxes',
-      '#options' => $fields,
-      '#default_value' => $this->options['field_types'],
-    );*/
-    
+
     parent::buildOptionsForm($form, $form_state);
   }
- 
+
   /**
    * {@inheritdoc}
    */
   public function render(ResultRow $values) {
-  
-    //$items = array();
-    ob_start();
-    var_dump($this->options['field_types']);
-    var_dump($this->view->field[$this->options['field_types']]->advancedRender($values));
-    $val = ob_end_clean();
-    syslog(LOG_ERR,$val);
-    /*foreach ($this->options['field_types'] as $key => $value) {
-        if ($value != '0') {
-            $items[] = $this->view->field[$key]->advancedRender($values);
-        }
-    }*/
-    
-    
+
+    $value = 0;
+    if($this->options['field_radios'] && isset($this->view->field[$this->options['field_radios']])){
+        $value = $this->view->field[$this->options['field_radios']]->advancedRender($values);
+    }
+
     $tag = '<a href="#" class="btn btn-primary" onclick="(function(){
         $.ajax({
-         url: "/robco_rest/addCartItem/",
+         url: "/robco_rest/addCartItem/'.$value.'",
          context: document.body
        }).done(function() {
          window.alert("ADD CLICKED");
      });
      })();">Add to cart</a>';
-     
+
     return [
         '#type' => 'inline_template',
         '#template' => $tag
