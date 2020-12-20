@@ -39,7 +39,7 @@ class XsltHandler{
         }
         
         $this->setUserAgent((isset($opts['user_agent'])) ? $opts['user_agent'] : "DEFAULT");
-		$this->setXsltTransformator(new XSLTProcessor());
+		$this->setXsltTransformator(new \XSLTProcessor());
 		
 		//set POST command callbacks
 		$this->setPostCallback('showCart',array($this,'showCart'));
@@ -66,8 +66,8 @@ class XsltHandler{
 			return null;
 		}
 
-   		$this->xsltTransformator()->importStylesheet(new  SimpleXMLElement($xsl,0,true));
-   		return $this->xsltTransformator()->transformToXml(new SimpleXMLElement($xml,0,true));
+   		$this->xsltTransformator()->importStylesheet(new  \SimpleXMLElement($xsl,0,true));
+   		return $this->xsltTransformator()->transformToXml(new \SimpleXMLElement($xml,0,true));
 	}
 
 	protected function validate($input){
