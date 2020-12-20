@@ -41,13 +41,13 @@ class RobcoRestController extends ControllerBase {
     );
   
     if(!($handler = new XsltHandler($xsltOpts))){
-        return new Response('Internal server error',500,'text/plain');
+        return new Response('Internal server error',500,array('content-type' => 'text/plain'));
     }
     
     if(!($ret = $handler->handle($command,$args)) || is_array($ret)){
-        return new Response('Internal server error',500,'text/plain');
+        return new Response('Internal server error',500,array('content-type' => 'text/plain'));
     }
     
-    return new Response($ret['content'], $ret['status'], $ret['content_type']);
+    return new Response($ret['content'], $ret['status'], array('content-type' => $ret['content_type']));
   }
 }
