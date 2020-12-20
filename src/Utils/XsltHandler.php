@@ -80,7 +80,7 @@ class XsltHandler{
 
 	public function handle($command, array $args = array()){
 	
-        if(!$this->host() || !$this->apiKey() || !$this->siteAddress() || !$this->projectID()){
+        if(!$this->hostAddress() || !$this->apiKey() || !$this->siteAddress() || !$this->projectID()){
             return array(500,'Incomplete settings','text/plain');
         }
         
