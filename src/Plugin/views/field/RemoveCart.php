@@ -71,7 +71,8 @@ class RemoveCart extends FieldPluginBase {
         console.log("REMOVE CLICKED");
         jQuery.ajax({
          url: "/robco_rest/delCartItem/'.$value.'",
-         context: document.body
+         context: document.body,
+         method: "POST"
        }).done(function() {
          console.log("REMOVE FINISHED");
      });
