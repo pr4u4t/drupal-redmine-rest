@@ -80,8 +80,6 @@ class XsltHandler{
             return array(500,'Invalid request','text/plain');
         }
         
-        syslog(LOG_ERR, "Handle::switch");
-        
         switch($this->method()){
             case "POST":
                 return $this->postHandler($command,$args);
@@ -216,8 +214,6 @@ class XsltHandler{
         $siteInfo = array();
         $matches = array();
         $opts = array();
-	
-        syslog(LOG_ERR,"postHandler::enter");
 	
         if(!preg_match('/(https*:\/\/)(.+)/',$this->siteAddress(), $siteInfo) || count($siteInfo) != 3 ){
             return array(

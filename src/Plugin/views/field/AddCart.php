@@ -71,7 +71,8 @@ class AddCart extends FieldPluginBase {
         console.log("ADD CLICKED");
         jQuery.ajax({
          url: "/robco_rest/addCartItem/'.$value.'",
-         context: document.body
+         context: document.body,
+         method: "POST"
        }).done(function() {
          console.log("ADD FINISHED");
      });
