@@ -70,14 +70,6 @@ class XsltHandler{
    		return $this->xsltTransformator()->transformToXml(new \SimpleXMLElement($xml,0,true));
 	}
 
-	protected function validate($input){
-        	return preg_match('/(cart|products)|(product\/([1-9][0-9]*))/', $input);
-	}
-
-	protected function parse($input,&$matches){
-        	return preg_match_all('/(([a-z]+)(\/([1-9][0-9]+)){0,1})/', $input,$matches);
-	}
-
 	public function handle($command, array $args = array()){
 	
         if(!$this->hostAddress() || !$this->apiKey() || !$this->siteAddress() || !$this->projectID()){
@@ -245,24 +237,9 @@ class XsltHandler{
         $opts['rest_protocol']   = $siteInfo[1];
         $opts['rest_address']    = $siteInfo[2];	
 
-		if (!isset($_POST['item']) || !is_string($_POST['item'])) {
-            return array(
-                'status'        => 400,
-                'content'       => "Failed to validate POST data",
-                'content_type'  => 'text/plain'
-            );
-        }   
-
-        if (!$this->validate($_POST['item']) || !$this->parse($_POST['item'],$matches)){
-            return array(
-                'status'        => 400,
-                'content'       => "Failed to parse POST data",
-                'content_type'  => 'text/html'
-            );
-        }   
-
 		try{
             //find right callback
+            syslog(LOG_ERR,"TRYING to FIND callback");
 
 			return array(
                 'status'        => 200,
