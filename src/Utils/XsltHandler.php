@@ -91,7 +91,7 @@ class XsltHandler{
         return array(500,'Unprocessable request','text/plain');
 	}	
 	
-	protected function showCart(){
+	protected function showCart(array $args = array()){
         if(!($tempstore = \Drupal::service('tempstore.private')->get('redmine_commerce'))){
             return array(false,"Failed to get session storage");
         }
@@ -149,35 +149,35 @@ class XsltHandler{
         $tempstore->set('cart_id', $id);
 	}
 	
-	protected function addCartItem(){
+	protected function addCartItem(array $args = array(){
         return array(200,'Not implemented yet','text/plain');
 	}
 	
-	protected function removeCartItem(){
+	protected function removeCartItem(array $args = array()){
         return array(200,'Not implemented yet','text/plain');
 	}
 	
-	protected function showProfile(){
+	protected function showProfile(array $args = array()){
         return array(200,'Not implemented yet','text/plain');
 	}
 	
-	protected function updateProfile(){
+	protected function updateProfile(array $args = array()){
         return array(200,'Not implemented yet','text/plain');
 	}
 	
-	protected function showTickets(){
+	protected function showTickets(array $args = array()){
         return array(200,'Not implemented yet','text/plain');
 	}
 	
-	protected function updateTicket(){
+	protected function updateTicket(array $args = array()){
         return array(200,'Not implemented yet','text/plain');
 	}
 	
-	protected function addTicket(){
+	protected function addTicket(array $args = array()){
         return array(200,'Not implemented yet','text/plain');
 	}
 	
-	protected function showProducts(){
+	protected function showProducts(array $args = array()){
         $data = (isset($matches[0])) ? (isset($matches[0][0])) ? $matches[0][0] : null : null;
         $tpl = (isset($matches[2])) ? (isset($matches[2][0])) ? $matches[2][0] : null : null;
 		
@@ -191,22 +191,22 @@ class XsltHandler{
             },
         $ret);
 			
-        return array();
+        return array(200,$ret,'text/html');
 	}
 	
-	protected function showProduct(){
+	protected function showProduct(array $args = array()){
         return array(200,'Not implemented yet','text/plain');
 	}
 	
-	protected function showOrders(){
+	protected function showOrders(array $args = array()){
         return array(200,'Not implemented yet','text/plain');
 	}
 	
-	protected function showOrder(){
+	protected function showOrder(array $args = array()){
         return array(200,'Not implemented yet','text/plain');
 	}
 	
-	protected function order(){
+	protected function order(array $args = array()){
         return array(200,'Not implemented yet','text/plain');
 	}
 	
@@ -238,14 +238,26 @@ class XsltHandler{
         $opts['rest_address']    = $siteInfo[2];	
 
 		try{
-            //find right callback
-            syslog(LOG_ERR,"TRYING to FIND callback");
+            $ret = null;
+            
+            if(!($call = $this->postCallback($command))){
+                return return array(
+                    'status'        => 500,
+                    'content'       => "Command not understood",
+                    'content_type'  => 'text/plain'
+                );
+            }
+            
+            if(!($ret = call_user_func())){
+                return array(
+                    'status'        => 500,
+                    'content'       => $ret,
+                    'content_type'  => 'text/html'
+                );
+            
+            }
 
-			return array(
-                'status'        => 200,
-                'content'       => $ret,
-                'content_type'  => 'text/html'
-            );
+			
 
         }catch(Exception $e){
             return array(
