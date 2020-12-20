@@ -240,7 +240,7 @@ class XsltHandler{
 		try{
             $ret = null;
             
-            if(!($call = $this->postCallback($command))){
+            if(!($callable = $this->postCallback($command))){
                 return array(
                     'status'        => 500,
                     'content'       => "Command not understood",
@@ -248,7 +248,7 @@ class XsltHandler{
                 );
             }
             
-            if(!($ret = call_user_func($args))){
+            if(!($ret = call_user_func($callable,$args))){
                 return array(
                     'status'        => 500,
                     'content'       => $ret,
@@ -257,7 +257,7 @@ class XsltHandler{
             
             }
 
-			
+			return $ret;
 
         }catch(Exception $e){
             return array(
