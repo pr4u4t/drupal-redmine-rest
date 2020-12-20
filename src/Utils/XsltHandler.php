@@ -241,14 +241,14 @@ class XsltHandler{
             $ret = null;
             
             if(!($call = $this->postCallback($command))){
-                return return array(
+                return array(
                     'status'        => 500,
                     'content'       => "Command not understood",
                     'content_type'  => 'text/plain'
                 );
             }
             
-            if(!($ret = call_user_func())){
+            if(!($ret = call_user_func($args))){
                 return array(
                     'status'        => 500,
                     'content'       => $ret,
