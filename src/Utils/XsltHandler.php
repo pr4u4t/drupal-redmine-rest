@@ -149,7 +149,7 @@ class XsltHandler{
         $tempstore->set('cart_id', $id);
 	}
 	
-	protected function addCartItem(array $args = array(){
+	protected function addCartItem(array $args = array()){
         return array(200,'Not implemented yet','text/plain');
 	}
 	
