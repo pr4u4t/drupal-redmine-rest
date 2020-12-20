@@ -383,7 +383,7 @@ class XsltHandler{
 	}
 	
 	public function postCallback($command){
-        return (is_array($this->_callbacks)) ? (isset($this->_callbacks[$command])) ? : null : null;
+        return (is_array($this->_postCallbacks)) ? (isset($this->_postCallbacks[$command])) ? $this->_postCallbacks[$command] : null : null;
 	}
 	
 	public function setPostCallback($command, $callback){
@@ -391,7 +391,7 @@ class XsltHandler{
             return false;
         }
         
-        $this->_callbacks[$command] = $callback;
+        $this->_postCallbacks[$command] = $callback;
         return true;
 	}
 	
