@@ -91,15 +91,15 @@ class XsltHandler{
         return array(500,'Unprocessable request','text/plain');
 	}	
 	
-	protected function showCart(array $args = array()){
+	protected function initCart(){
         if(!($tempstore = \Drupal::service('tempstore.private')->get('redmine_commerce'))){
-            return array(false,"Failed to get session storage");
+            return null;
         }
-        
-        if(($ret = $tempstore->get('cart_id')) != null){
-            return array(true,$ret);
+	
+        if(($id = $tempstore->get('cart_id')) == null){
+            return $id;
         }
-        
+	
         $id = Drupal\Component\Utility\Random::string(16,true);
         $id = "cart-$id";
         $xml = '<?xml version="1.0" encoding="UTF-8"?><deal><project_id>1</project_id><name>'.$id.'</name><contact_id>1</contact_id></deal>';
@@ -130,28 +130,60 @@ class XsltHandler{
         curl_setopt_array( $ch, $options );
         
         if(($data = curl_exec($ch)) === FALSE) {
-			$ret = array(
-                'status'        => 500, 
-                'content'       => curl_error($ch),
-                'content_type'  => 'text/plain'
-            );
-        }else{
-            $ret = array(
-                'status'    => 200, 
-                'content'   => $data
-            );
-            
-            $header  = curl_getinfo( $ch );
-            $ret['content_type'] = (isset($header['content_type'])) ? $header['content_type'] : null;
+			return null;
         }
 
         curl_close($ch);
         
         $tempstore->set('cart_id', $id);
+        
+        return $id;
+	}
+	
+	protected function showCart(array $args = array()){
+        if(!($id = $this->initCart())){
+            return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Failed to obtain cart'
+            );
+        }
+        
+        
+        
+        
+        
+        
+        
+        /*
+        $ret = array(
+                'status'        => 500, 
+                'content'       => curl_error($ch),
+                'content_type'  => 'text/plain'
+        );
+        
+        $ret = array(
+                'status'    => 200, 
+                'content'   => $data
+        );
+            
+        $header  = curl_getinfo( $ch );
+        $ret['content_type'] = (isset($header['content_type'])) ? $header['content_type'] : null;
+        */
+        
         return $ret;
 	}
 	
 	protected function addCartItem(array $args = array()){
+        if(!($id = $this->initCart())){
+            return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Failed to obtain cart'
+            );
+        }
+        
+	
         return array(
             'status'        => 200,
             'content'       => 'Not implemented yet',
@@ -160,6 +192,14 @@ class XsltHandler{
 	}
 	
 	protected function removeCartItem(array $args = array()){
+        if(!($id = $this->initCart())){
+            return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Failed to obtain cart'
+            );
+        }
+        
         return array(
             'status'        => 200,
             'content'       => 'Not implemented yet',
@@ -229,6 +269,7 @@ class XsltHandler{
 	}
 	
 	protected function showProduct(array $args = array()){
+        $ret = "Not implemented yet";
         return array(
             'status'        => 200,
             'content'       => $ret,
@@ -237,6 +278,7 @@ class XsltHandler{
 	}
 	
 	protected function showOrders(array $args = array()){
+        $ret = "Not implemented yet";
         return array(
             'status'        => 200,
             'content'       => $ret,
@@ -245,6 +287,7 @@ class XsltHandler{
 	}
 	
 	protected function showOrder(array $args = array()){
+        $ret = "Not implemented yet";
         return array(
             'status'        => 200,
             'content'       => $ret,
@@ -253,6 +296,7 @@ class XsltHandler{
 	}
 	
 	protected function order(array $args = array()){
+        $ret = "Not implemented yet";
         return array(
             'status'        => 200,
             'content'       => $ret,
