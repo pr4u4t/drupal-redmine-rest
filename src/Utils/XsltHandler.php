@@ -96,7 +96,7 @@ class XsltHandler{
             return null;
         }
 	
-        if(($id = $tempstore->get('cart_id')) == null){
+        if(($id = $tempstore->get('cart_id')) != null){
             return $id;
         }
 	
