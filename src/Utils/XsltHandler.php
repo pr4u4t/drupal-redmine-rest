@@ -50,7 +50,7 @@ class XsltHandler{
 		$this->setPostCallback('showTickets',array($this,'showTickets'));
 		$this->setPostCallback('updateTicket',array($this,'updateTicket'));
 		$this->setPostCallback('addTicket',array($this,'addTicket'));
-		$this->setPostCallback('showProducts',array($this,'showProducts'));
+		//$this->setPostCallback('showProducts',array($this,'showProducts'));
 		$this->setPostCallback('showProduct',array($this,'showProduct'));
         $this->setPostCallback('showOrders',array($this,'showOrders'));
 		$this->setPostCallback('showOrder',array($this,'showOrder'));
@@ -140,7 +140,7 @@ class XsltHandler{
         return $id;
 	}
 	
-	protected function showCart(array $args = array()){
+	protected function showCart(array $args = array(),$format = 'html'){
         if(!($id = $this->initCart())){
             return array(
                 'status'        => 500,
@@ -149,11 +149,33 @@ class XsltHandler{
             );
         }
         
+        switch($format){
+            case 'html':
+                break;
         
         
-        
-        
-        
+            case 'xml':
+                // create curl resource
+                $ch = curl_init();
+
+                // set url
+                curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/deals/$id.xml?key=".$this->apiKey());
+
+                //return the transfer as a string
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+                // $output contains the output string
+                $ret = curl_exec($ch);
+
+                // close curl resource to free up system resources
+                curl_close($ch);
+                
+                return array(
+                    'status'        => 200,
+                    'content'       => $ret,
+                    'content_type'  => 'text/xml'
+                );
+        }
         
         /*
         $ret = array(
@@ -183,10 +205,11 @@ class XsltHandler{
             );
         }
         
+        
 	
         return array(
             'status'        => 200,
-            'content'       => 'Not implemented yet',
+            'content'       => 'Product added.',
             'content_type'  => 'text/plain'
         );
 	}
@@ -247,6 +270,7 @@ class XsltHandler{
         );
 	}
 	
+	/*
 	protected function showProducts(array $args = array()){
         $data = (isset($matches[0])) ? (isset($matches[0][0])) ? $matches[0][0] : null : null;
         $tpl = (isset($matches[2])) ? (isset($matches[2][0])) ? $matches[2][0] : null : null;
@@ -267,6 +291,7 @@ class XsltHandler{
             'content_type'  =>'text/html'
         );
 	}
+	*/
 	
 	protected function showProduct(array $args = array()){
         $ret = "Not implemented yet";
