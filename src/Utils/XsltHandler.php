@@ -140,6 +140,7 @@ class XsltHandler{
                 'status'    => 200, 
                 'content'   => $data
             );
+            
             $header  = curl_getinfo( $ch );
             $ret['content_type'] = (isset($header['content_type'])) ? $header['content_type'] : null;
         }
@@ -147,6 +148,7 @@ class XsltHandler{
         curl_close($ch);
         
         $tempstore->set('cart_id', $id);
+        return $ret;
 	}
 	
 	protected function addCartItem(array $args = array()){
@@ -219,23 +221,43 @@ class XsltHandler{
             },
         $ret);
 			
-        return array(200,$ret,'text/html');
+        return array(
+            'status'        => 200,
+            'content'       => $ret,
+            'content_type'  =>'text/html'
+        );
 	}
 	
 	protected function showProduct(array $args = array()){
-        return array(200,'Not implemented yet','text/plain');
+        return array(
+            'status'        => 200,
+            'content'       => $ret,
+            'content_type'  =>'text/html'
+        );
 	}
 	
 	protected function showOrders(array $args = array()){
-        return array(200,'Not implemented yet','text/plain');
+        return array(
+            'status'        => 200,
+            'content'       => $ret,
+            'content_type'  =>'text/html'
+        );
 	}
 	
 	protected function showOrder(array $args = array()){
-        return array(200,'Not implemented yet','text/plain');
+        return array(
+            'status'        => 200,
+            'content'       => $ret,
+            'content_type'  =>'text/html'
+        );
 	}
 	
 	protected function order(array $args = array()){
-        return array(200,'Not implemented yet','text/plain');
+        return array(
+            'status'        => 200,
+            'content'       => $ret,
+            'content_type'  =>'text/html'
+        );
 	}
 	
 	protected function postHandler($command,$args){
