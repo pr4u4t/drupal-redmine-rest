@@ -45,7 +45,7 @@ class RobcoRestController extends ControllerBase {
     }
     
     if(!($ret = $handler->handle($command,$args)) || !is_array($ret) || !isset($ret['status']) 
-        || !isset($ret['content']) !isset($ret['content_type'])){
+        || !isset($ret['content']) || !isset($ret['content_type'])){
         return new Response('Internal server error',500,array('content-type' => 'text/plain'));
     }
     
