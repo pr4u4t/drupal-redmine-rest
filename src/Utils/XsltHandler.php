@@ -150,31 +150,59 @@ class XsltHandler{
 	}
 	
 	protected function addCartItem(array $args = array()){
-        return array(200,'Not implemented yet','text/plain');
+        return array(
+            'status'        => 200,
+            'content'       => 'Not implemented yet',
+            'content_type'  => 'text/plain'
+        );
 	}
 	
 	protected function removeCartItem(array $args = array()){
-        return array(200,'Not implemented yet','text/plain');
+        return array(
+            'status'        => 200,
+            'content'       => 'Not implemented yet',
+            'content_type'  => 'text/plain'
+        );
 	}
 	
 	protected function showProfile(array $args = array()){
-        return array(200,'Not implemented yet','text/plain');
+        return array(
+            'status'        => 200,
+            'content'       => 'Not implemented yet',
+            'content_type'  => 'text/plain'
+        );
 	}
 	
 	protected function updateProfile(array $args = array()){
-        return array(200,'Not implemented yet','text/plain');
+        return array(
+            'status'        => 200,
+            'content'       => 'Not implemented yet',
+            'content_type'  => 'text/plain'
+        );
 	}
 	
 	protected function showTickets(array $args = array()){
-        return array(200,'Not implemented yet','text/plain');
+        return array(
+            'status'        => 200,
+            'content'       => 'Not implemented yet',
+            'content_type'  => 'text/plain'
+        );
 	}
 	
 	protected function updateTicket(array $args = array()){
-        return array(200,'Not implemented yet','text/plain');
+        return array(
+            'status'        => 200,
+            'content'       => 'Not implemented yet',
+            'content_type'  => 'text/plain'
+        );
 	}
 	
 	protected function addTicket(array $args = array()){
-        return array(200,'Not implemented yet','text/plain');
+        return array(
+            'status'        => 200,
+            'content'       => 'Not implemented yet',
+            'content_type'  => 'text/plain'
+        );
 	}
 	
 	protected function showProducts(array $args = array()){
