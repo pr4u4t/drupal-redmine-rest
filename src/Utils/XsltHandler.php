@@ -110,7 +110,7 @@ class XsltHandler{
         $rand = new Random();
         $id = $rand->name(16,true);
         $id = "cart-$id";
-        $xml = '<deal><project_id>'.$this->projectID().'</project_id><name>'.$id.'</name><contact_id>1</contact_id></deal>';
+        $xml = '<deal><project_id>'.$this->projectID().'</project_id><name>'.$id.'</name><contact_id>'.$this->defaultCartOwner().'</contact_id></deal>';
         
         $header = array(
             "Content-type: text/xml",
