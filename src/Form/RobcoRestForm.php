@@ -51,7 +51,7 @@ class RobcoRestForm extends ConfigFormBase {
     $form['anonymous_user_id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Anonymous user ID:'),
-      '#default_value' => $config->get('robco_rest.commerce_project_id'),
+      '#default_value' => $config->get('robco_rest.anonymous_user_id'),
       '#description' => $this->t('Redmine e-commerce anonymous user ID used to store anonymous cart'),
     ];
     
