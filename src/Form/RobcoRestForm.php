@@ -40,11 +40,19 @@ class RobcoRestForm extends ConfigFormBase {
     ];
 
     // Commerce project ID.
-    $form['commarce_project_id'] = [
+    $form['commerce_project_id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Commerce project ID:'),
       '#default_value' => $config->get('robco_rest.commerce_project_id'),
       '#description' => $this->t('Redmine e-commerce project ID'),
+    ];
+    
+    // Commerce project ID.
+    $form['anonymous_user_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Anonymous user ID:'),
+      '#default_value' => $config->get('robco_rest.commerce_project_id'),
+      '#description' => $this->t('Redmine e-commerce anonymous user ID used to store anonymous cart'),
     ];
     
     return $form;
@@ -65,6 +73,7 @@ class RobcoRestForm extends ConfigFormBase {
     $config->set('robco_rest.host', $form_state->getValue('host'));
     $config->set('robco_rest.api_key', $form_state->getValue('api_key'));
     $config->set('robco_rest.commerce_project_id', $form_state->getValue('commerce_project_id'));
+    $config->set('robco_rest.anonymous_user_id', $form_state->getValue('anonymous_user_id'));
     $config->save();
     return parent::submitForm($form, $form_state);
   }
