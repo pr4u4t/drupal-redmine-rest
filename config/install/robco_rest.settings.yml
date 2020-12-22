@@ -2,3 +2,4 @@ robco_rest:
   host: 'http://redmine.ad.robco.pl'
   api_key: 'b1116157b45f11d5bb6987afc1d90904e0c97a6f'
   commerce_project_id:  'uslugi'
+  anonymous_user_id: 30

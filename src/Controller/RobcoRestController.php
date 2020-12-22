@@ -33,11 +33,12 @@ class RobcoRestController extends ControllerBase {
     $config = \Drupal::config('robco_rest.settings');
   
     $xsltOpts = array(
-        'api_key'       => $config->get('robco_rest.api_key'),
-        'host'          => $config->get('robco_rest.host'),
-        'project_id'    => $config->get('robco_rest.commerce_project_id'),
-        'site'          => $request->getSchemeAndHttpHost(),
-        'method'        => $request->getMethod()
+        'api_key'               => $config->get('robco_rest.api_key'),
+        'host'                  => $config->get('robco_rest.host'),
+        'project_id'            => $config->get('robco_rest.commerce_project_id'),
+        'default_cart_owner'    => $config->get('robco_rest.default_cart_owner'),
+        'site'                  => $request->getSchemeAndHttpHost(),
+        'method'                => $request->getMethod()
     );
   
     if(!($handler = new XsltHandler($xsltOpts))){

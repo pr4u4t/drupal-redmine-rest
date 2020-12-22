@@ -14,3 +14,6 @@ robco_rest.settings:
         commerce_project_id:
           type: text
           label: 'Commerce project ID'
+        anonymous_user_id:
+          type: text
+          label: 'Redmine ID of anonymous cart owner'

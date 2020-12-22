@@ -12,7 +12,8 @@ class XsltHandler{
 	private $_userAgent;
 	private $_method;
 	private $_projectID;
-
+    private $_defaultCartOwner;
+    
 	private $_postCallbacks;
 	private $_getCallbacks;
 	
@@ -38,6 +39,10 @@ class XsltHandler{
         
         if(isset($opts['project_id'])){
             $this->setProjectID($opts['project_id']);
+        }
+        
+        if(isset($opts['default_cart_owner'])){
+            $this->setDefaultCartOwner($opts['default_cart_owner']);
         }
         
         $this->setUserAgent((isset($opts['user_agent'])) ? $opts['user_agent'] : "DEFAULT");
@@ -506,6 +511,14 @@ class XsltHandler{
     
     public function setProjectID($id){
         $this->_projectID = $id;
+    }
+    
+    public function defaultCartOwner(){
+        return $this->_defaultCartOwner;
+    }
+    
+    public function setDefaultCartOwner($id){
+        $this->_defaultCartOwner = $id;
     }
     
     private function setXsltTransformator($trans){
