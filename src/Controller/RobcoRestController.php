@@ -36,7 +36,7 @@ class RobcoRestController extends ControllerBase {
         'api_key'               => $config->get('robco_rest.api_key'),
         'host'                  => $config->get('robco_rest.host'),
         'project_id'            => $config->get('robco_rest.commerce_project_id'),
-        'default_cart_owner'    => $config->get('robco_rest.default_cart_owner'),
+        'default_cart_owner'    => $config->get('robco_rest.anonymous_user_id'),
         'site'                  => $request->getSchemeAndHttpHost(),
         'method'                => $request->getMethod()
     );
