@@ -136,7 +136,12 @@ class XsltHandler{
 			return null;
         }
 
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
+        
+        if($httpcode != 200){
+            return null;
+        }
         
         $tempstore->set('cart_id', $id);
         
