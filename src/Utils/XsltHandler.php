@@ -2,6 +2,8 @@
 
 namespace Drupal\robco_rest\Utils;
 
+use Drupal\Component\Utility\Random;
+
 class XsltHandler{
 	private $_apiKey;
 	private $_hostAddr;
@@ -100,9 +102,10 @@ class XsltHandler{
             return $id;
         }
 	
-        $id = Drupal\Component\Utility\Random::string(16,true);
+        $rand = new Random();
+        $id = $rand->name(16,true);
         $id = "cart-$id";
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><deal><project_id>1</project_id><name>'.$id.'</name><contact_id>1</contact_id></deal>';
+        $xml = '<deal><project_id>'.$this->projectID().'</project_id><name>'.$id.'</name><contact_id>1</contact_id></deal>';
         
         $header = array(
             "Content-type: text/xml",
@@ -151,7 +154,14 @@ class XsltHandler{
         
         switch($format){
             case 'html':
-                break;
+                $ret = $this->transform($this->hostAddress()."/deals/$id.xml?key=".$this->apiKey(),
+                    $this->hostAddress()."/cms/pages/cartxsl?key=".$this->apiKey());
+                    
+                return array(
+                    'status'        => 200,
+                    'content_type'  => 'text/html',
+                    'content'       => $ret
+                );
         
         
             case 'xml':
@@ -173,7 +183,7 @@ class XsltHandler{
                 return array(
                     'status'        => 200,
                     'content'       => $ret,
-                    'content_type'  => 'text/xml'
+                    'content_type'  => 'application/xml'
                 );
         }
         

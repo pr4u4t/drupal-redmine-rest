@@ -19,7 +19,7 @@ class RedmineCart extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    $tag = '<script type="text/javascript"> </script>
+    $tag = '
     <ul class="menu menu--cart nav navbar-nav">
         <li class="expanded dropdown first last">
             <a href="/" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -34,7 +34,17 @@ class RedmineCart extends BlockBase {
                  </li>
             </ul>
         </li>
-    </ul>';
+    </ul>
+    <script type="text/javascript"> 
+        console.log("GET CART");
+        jQuery.ajax({
+         url: "/robco_rest/showCart",
+         context: document.body,
+         method: "POST"
+       }).done(function(data) {
+         console.log(data);
+     });
+    </script>';
     
     	
     return [
