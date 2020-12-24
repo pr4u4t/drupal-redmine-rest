@@ -113,7 +113,7 @@ class XsltHandler{
         $xml = '<deal><project_id>'.$this->projectID().'</project_id><name>'.$id.'</name><contact_id>'.$this->defaultCartOwner().'</contact_id></deal>';
         
         $header = array(
-            "Content-type: text/xml",
+            "Content-type: application/xml",
             "Content-length: " . strlen($xml),
             "Connection: close"
         );
@@ -164,9 +164,16 @@ class XsltHandler{
         
         switch($format){
             case 'html':
-                $ret = $this->transform($this->hostAddress()."/deals/$id.xml?key=".$this->apiKey(),
-                    $this->hostAddress()."/cms/pages/cartxsl?key=".$this->apiKey());
-                    
+                if(!($ret = $this->transform($this->hostAddress()."/deals/$id.xml?key=".$this->apiKey(),
+                    $this->hostAddress()."/cms/pages/cartxsl?key=".$this->apiKey()))){
+                
+                    return array(
+                        'status'        = 500>,
+                        'content'       => 'Failed to transform cart data.',
+                        'content_type'  => 'text/plain'
+                    );
+                }
+                
                 return array(
                     'status'        => 200,
                     'content_type'  => 'text/html',
@@ -213,7 +220,11 @@ class XsltHandler{
         $ret['content_type'] = (isset($header['content_type'])) ? $header['content_type'] : null;
         */
         
-        return $ret;
+        return array(
+            'status'        => 422,
+            'content'       => 'Unprocessable entity.',
+            'content_type'  => 'text/plain'
+        );
 	}
 	
 	protected function addCartItem(array $args = array()){
@@ -225,8 +236,99 @@ class XsltHandler{
             );
         }
         
+        if(!isset($args[0])){
+            return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Product ID missing.'
+            );
+        }
         
+        if(!is_array(($cart = $this->showCart($args,'xml'))) || !isset($cart['status']) 
+            || $cart['status'] < 200 || $cart['status'] >= 300){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to get cart content.',
+                'content_type'  => 'text/plain'
+            );
+        }
 	
+        if(!($ctree = new SimpleXMLElement($cart['content']))){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to parse cart content.',
+                'content_type'  => 'text/plain'
+            );
+        }
+
+        if(!($line = $ctree->lines->addChild('line'))){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to add line item.',
+                'content_type'  => 'text/plain'
+            );
+        }
+        
+        if(!($ptree = $this->showProduct(array($args[0]),'xml'))){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to obtain product details.',
+                'content_type'  => 'text/plain'
+            );
+        }
+        
+        $line->addChild('pos', $ctrre->lines->count());
+        $line->addChild('id', $args[0]);
+        $line->addChild('name', $ptree->name);
+        $line->addCHILD('price',$ptree->price);
+        $line->addChild('line_total',$ptree->price);
+
+        if(!($xml = $ctree->asXML())){
+            return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Failed to prepare cart data.'
+            );
+        }
+        
+        $header = array(
+            "Content-type: application/xml",
+            "Content-length: " . strlen($xml),
+            "Connection: close"
+        );
+        
+        $options = array(
+            CURLOPT_PUT             => true
+            CURLOPT_POST            => false,
+            CURLOPT_GET             => false,
+            CURLOPT_URL             => $this->hostAddress()."/deals/.".$id."xml?key=".$this->apiKey(),
+            CURLOPT_FOLLOWLOCATION  => true,
+            CURLOPT_RETURNTRANSFER  => true,
+            CURLOPT_USERAGENT       => $this->userAgent(),
+            CURLOPT_HEADER          => false,
+            CURLOPT_ENCODING        => "",
+            CURLOPT_AUTOREFERER     => true,
+            CURLOPT_CONNECTTIMEOUT  => 120,
+            CURLOPT_TIMEOUT         => 120,
+            CURLOPT_MAXREDIRS       => 10,
+            CURLOPT_POSTFIELDS      => $xml,
+            CURLOPT_HTTPHEADER      => $header
+		);
+
+        $ch = curl_init();
+        curl_setopt_array( $ch, $options );
+        
+        if(($data = curl_exec($ch)) === FALSE) {
+			return null;
+        }
+
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if($httpcode <200 || $httpcode >= 300){
+            return null;
+        }
+        
         return array(
             'status'        => 200,
             'content'       => 'Product added.',
@@ -313,12 +415,52 @@ class XsltHandler{
 	}
 	*/
 	
-	protected function showProduct(array $args = array()){
-        $ret = "Not implemented yet";
+	protected function showProduct(array $args = array(),$format = 'html'){
+        switch($format){
+            case 'html':
+                if(!($ret = $this->transform($this->hostAddress()."/products/$id.xml?key=".$this->apiKey(),
+                    $this->hostAddress()."/cms/pages/productxsl?key=".$this->apiKey()))){
+                        return array(
+                            'status'        => 500,
+                            'content_type'  => 'text/plain',
+                            'content'       => "Failed to get product details."
+                        );
+                }
+                
+                return array(
+                    'status'        => 200,
+                    'content_type'  => 'text/html',
+                    'content'       => $ret
+                );
+        
+        
+            case 'xml':
+                // create curl resource
+                $ch = curl_init();
+
+                // set url
+                curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/products/$id.xml?key=".$this->apiKey());
+
+                //return the transfer as a string
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+                // $output contains the output string
+                $ret = curl_exec($ch);
+
+                // close curl resource to free up system resources
+                curl_close($ch);
+                
+                return array(
+                    'status'        => 200,
+                    'content'       => $ret,
+                    'content_type'  => 'application/xml'
+                );
+        }
+        
         return array(
-            'status'        => 200,
-            'content'       => $ret,
-            'content_type'  =>'text/html'
+            'status'        => 422,
+            'content'       => "Unprocessable entity.",
+            'content_type'  =>'text/plain'
         );
 	}
 	
