@@ -176,7 +176,7 @@ class XsltHandler{
                     $this->hostAddress()."/cms/pages/cartxsl?key=".$this->apiKey()))){
                 
                     return array(
-                        'status'        = 500>,
+                        'status'        => 500,
                         'content'       => 'Failed to transform cart data.',
                         'content_type'  => 'text/plain'
                     );
@@ -306,7 +306,7 @@ class XsltHandler{
         );
         
         $options = array(
-            CURLOPT_PUT             => true
+            CURLOPT_PUT             => true,
             CURLOPT_POST            => false,
             CURLOPT_GET             => false,
             CURLOPT_URL             => $this->hostAddress()."/deals/.".$id."xml?key=".$this->apiKey(),
