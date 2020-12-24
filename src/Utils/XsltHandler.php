@@ -148,7 +148,15 @@ class XsltHandler{
             return null;
         }
         
-        $tempstore->set('cart_id', $id);
+        if(!($ctree = new SimpleXMLElement($data))){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to parse cart content.',
+                'content_type'  => 'text/plain'
+            );
+        }
+        
+        $tempstore->set('cart_id', $id = $ctree->id);
         
         return $id;
 	}
