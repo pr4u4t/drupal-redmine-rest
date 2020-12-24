@@ -293,6 +293,11 @@ class XsltHandler{
         $line->addCHILD('price',$ptree->price);
         $line->addChild('line_total',$ptree->price);
 
+        foreach($ctree->lines as $key => $line){
+        
+            $ctree[$key] = (string) $line;
+        }
+        
         if(!($xml = (string) $ctree)){
             return array(
                 'status'        => 500,
