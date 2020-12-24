@@ -148,7 +148,7 @@ class XsltHandler{
             return null;
         }
         
-        if(!($ctree = new SimpleXMLElement($data))){
+        if(!($ctree = new \SimpleXMLElement($data))){
             return array(
                 'status'        => 500,
                 'content'       => 'Failed to parse cart content.',
@@ -261,7 +261,7 @@ class XsltHandler{
             );
         }
 	
-        if(!($ctree = new SimpleXMLElement($cart['content']))){
+        if(!($ctree = new \SimpleXMLElement($cart['content']))){
             return array(
                 'status'        => 500,
                 'content'       => 'Failed to parse cart content.',
