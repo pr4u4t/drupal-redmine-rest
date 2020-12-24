@@ -148,10 +148,10 @@ class XsltHandler{
             return null;
         }
         
-        if(!($ctree = new \SimpleXMLElement($data))){
+        if(!($ctree = new \SimpleXMLElement($data)) || !property_exists($ctree,'id')){
             return array(
                 'status'        => 500,
-                'content'       => 'Failed to parse cart content.',
+                'content'       => 'Failed to get cart details.',
                 'content_type'  => 'text/plain'
             );
         }
@@ -269,13 +269,15 @@ class XsltHandler{
             );
         }
 
-        if(!($line = $ctree->lines->addChild('line'))){
+        if((property_exists($ctree,'lines') || ($lines = $ctree->addChild('lines'))) && !($line = $ctree->lines->addChild('line'))){
             return array(
                 'status'        => 500,
                 'content'       => 'Failed to add line item.',
                 'content_type'  => 'text/plain'
             );
         }
+        
+        $lines->addAttribute('type','array');
         
         if(!($ptree = $this->showProduct(array($args[0]),'xml'))){
             return array(
@@ -285,13 +287,13 @@ class XsltHandler{
             );
         }
         
-        $line->addChild('pos', $ctrre->lines->count());
+        $line->addChild('pos', $ctree->lines->count());
         $line->addChild('id', $args[0]);
         $line->addChild('name', $ptree->name);
         $line->addCHILD('price',$ptree->price);
         $line->addChild('line_total',$ptree->price);
 
-        if(!($xml = $ctree->asXML())){
+        if(!($xml = (string) $ctree)){
             return array(
                 'status'        => 500,
                 'content_type'  => 'text/plain',
