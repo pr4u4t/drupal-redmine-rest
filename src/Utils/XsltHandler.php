@@ -293,12 +293,8 @@ class XsltHandler{
         $line->addCHILD('price',$ptree->price);
         $line->addChild('line_total',$ptree->price);
 
-        foreach($ctree->lines as $key => $line){
         
-            $ctree[$key] = (string) $line;
-        }
-        
-        if(!($xml = (string) $ctree)){
+        if(!($xml = $this->serializeXML($ctree))){
             return array(
                 'status'        => 500,
                 'content_type'  => 'text/plain',
@@ -340,7 +336,7 @@ class XsltHandler{
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         
-        if($httpcode <200 || $httpcode >= 300){
+        if($httpcode < 200 || $httpcode >= 300){
             return null;
         }
         
@@ -504,6 +500,10 @@ class XsltHandler{
             'content'       => $ret,
             'content_type'  =>'text/html'
         );
+	}
+	
+	protected function serializeXML(\SimpleXMLElement $tree){
+        return $tree->asXML();
 	}
 	
 	protected function postHandler($command,$args){
