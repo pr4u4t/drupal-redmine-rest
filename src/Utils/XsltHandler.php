@@ -144,7 +144,7 @@ class XsltHandler{
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         
-        if($httpcode <200 || $httpcode >= 300){
+        if($httpcode < 200 || $httpcode >= 300){
             return null;
         }
         
@@ -156,7 +156,7 @@ class XsltHandler{
             );
         }
         
-        $tempstore->set('cart_id', $id = $ctree->id);
+        $tempstore->set('cart_id', ($id = (string) $ctree->id));
         
         return $id;
 	}
@@ -269,15 +269,25 @@ class XsltHandler{
             );
         }
 
-        if((property_exists($ctree,'lines') || ($lines = $ctree->addChild('lines'))) && !($line = $ctree->lines->addChild('line'))){
+        if(!((property_exists($ctree,'lines') && ($lines = $ctree->lines)) || $lines = $ctree->addChild('lines'))){  
+           return array(
+                'status'        => 500,
+                'content'       => 'Failed to add cart lines.',
+                'content_type'  => 'text/plain'
+            );
+        }
+    
+        if(($line = $lines->addChild('line')) === null){
             return array(
                 'status'        => 500,
                 'content'       => 'Failed to add line item.',
                 'content_type'  => 'text/plain'
             );
         }
-        
-        $lines->addAttribute('type','array');
+    
+        if(!xmlAttribute($lines,"type")){
+            $lines->addAttribute('type','array');
+        }
         
         if(!($ptree = $this->showProduct(array($args[0]),'xml'))){
             return array(
@@ -501,6 +511,15 @@ class XsltHandler{
             'content_type'  =>'text/html'
         );
 	}
+	
+	protected function xmlAttribute(\SimpleXMLElement $elem, $sattr){
+        foreach($elem->attributes() as $attr => $value) {
+                if($attr == $sattr)
+                    return $value;
+        }
+        
+        return null;
+    }
 	
 	protected function serializeXML(\SimpleXMLElement $tree){
         return $tree->asXML();
