@@ -269,15 +269,16 @@ class XsltHandler{
             );
         }
 
-        if(!((property_exists($ctree,'lines') && ($lines = $ctree->lines)) || $lines = $ctree->addChild('lines'))){  
+        if(!((property_exists($ctree,'lines') && is_a($lines = $ctree->lines),"SimpleXMLElement")
+                || is_a($lines = $ctree->addChild('lines'),"SimpleXMLElement"))){
            return array(
                 'status'        => 500,
                 'content'       => 'Failed to add cart lines.',
                 'content_type'  => 'text/plain'
             );
         }
-    
-        if(($line = $lines->addChild('line')) === null){
+
+        if(!is_a($line = $lines->addChild('line'),"SimpleXMLElement")){
             return array(
                 'status'        => 500,
                 'content'       => 'Failed to add line item.',
@@ -340,14 +341,22 @@ class XsltHandler{
         curl_setopt_array( $ch, $options );
         
         if(($data = curl_exec($ch)) === FALSE) {
-			return null;
+			return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Failed to send data to redmine.'
+			);
         }
 
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         
         if($httpcode < 200 || $httpcode >= 300){
-            return null;
+            return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Invalid response code when adding line item.'
+            );
         }
         
         return array(
