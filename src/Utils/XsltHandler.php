@@ -320,7 +320,7 @@ class XsltHandler{
         );
         
         $options = array(
-            CURLOPT_PUT             => true,
+            CURLOPT_CUSTOMREQUEST   => "PUT",
             CURLOPT_POST            => false,
             CURLOPT_GET             => false,
             CURLOPT_URL             => $this->hostAddress()."/deals/.".$id."xml?key=".$this->apiKey(),
