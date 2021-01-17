@@ -269,7 +269,7 @@ class XsltHandler{
             );
         }
 
-        if(!((property_exists($ctree,'lines') && is_a($lines = $ctree->lines),"SimpleXMLElement")
+        if(!((property_exists($ctree,'lines') && is_a(($lines = $ctree->lines),"SimpleXMLElement"))
                 || is_a($lines = $ctree->addChild('lines'),"SimpleXMLElement"))){
            return array(
                 'status'        => 500,
