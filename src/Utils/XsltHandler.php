@@ -322,7 +322,7 @@ class XsltHandler{
         $options = array(
             CURLOPT_CUSTOMREQUEST   => "PUT",
             CURLOPT_POST            => false,
-            CURLOPT_GET             => false,
+            CURLOPT_HTTPGET         => false,
             CURLOPT_URL             => $this->hostAddress()."/deals/.".$id."xml?key=".$this->apiKey(),
             CURLOPT_FOLLOWLOCATION  => true,
             CURLOPT_RETURNTRANSFER  => true,
@@ -344,7 +344,7 @@ class XsltHandler{
 			return array(
                 'status'        => 500,
                 'content_type'  => 'text/plain',
-                'content'       => 'Failed to send data to redmine.'
+                'content'       => 'Failed to send data to redmine ('.curl_error($ch).')'
 			);
         }
 
@@ -355,7 +355,7 @@ class XsltHandler{
             return array(
                 'status'        => 500,
                 'content_type'  => 'text/plain',
-                'content'       => 'Invalid response code when adding line item. ('.curl_error($ch).')'
+                'content'       => 'Invalid response code when adding line item.'
             );
         }
         
