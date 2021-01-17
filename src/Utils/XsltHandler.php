@@ -286,7 +286,7 @@ class XsltHandler{
             );
         }
     
-        if(!xmlAttribute($lines,"type")){
+        if(!$this->xmlAttribute($lines,"type")){
             $lines->addAttribute('type','array');
         }
         
