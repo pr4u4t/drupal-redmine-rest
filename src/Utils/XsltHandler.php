@@ -355,7 +355,7 @@ class XsltHandler{
             return array(
                 'status'        => 500,
                 'content_type'  => 'text/plain',
-                'content'       => 'Invalid response code when adding line item.'
+                'content'       => 'Invalid response code when adding line item. ('.curl_error($ch).')'
             );
         }
         
