@@ -323,7 +323,7 @@ class XsltHandler{
             CURLOPT_CUSTOMREQUEST   => "PUT",
             CURLOPT_POST            => false,
             CURLOPT_HTTPGET         => false,
-            CURLOPT_URL             => $this->hostAddress()."/deals/.".$id."xml?key=".$this->apiKey(),
+            CURLOPT_URL             => $this->hostAddress()."/deals/".$id.".xml?key=".$this->apiKey(),
             CURLOPT_FOLLOWLOCATION  => true,
             CURLOPT_RETURNTRANSFER  => true,
             CURLOPT_USERAGENT       => $this->userAgent(),
