@@ -765,7 +765,7 @@ class XsltHandler{
         return true;
 	}
 	
-	public function getCallback($url){
+	public function getCallback($command){
         return (is_array($this->_getCallbacks)) ? (isset($this->_getCallbacks[$command])) ? $this->_getCallbacks[$command] : null : null;
 	}
 	
