@@ -290,10 +290,18 @@ class XsltHandler{
             $lines->addAttribute('type','array');
         }
         
-        if(!($ptree = $this->showProduct(array($args[0]),'xml'))){
+        if(!($parray = $this->showProduct(array($args[0]),'xml'))){
             return array(
                 'status'        => 500,
                 'content'       => 'Failed to obtain product details.',
+                'content_type'  => 'text/plain'
+            );
+        }
+        
+        if(!($ptree = new \SimpleXMLElement($parray['content']))){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to parse product content.',
                 'content_type'  => 'text/plain'
             );
         }
