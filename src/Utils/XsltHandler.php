@@ -309,6 +309,7 @@ class XsltHandler{
         $line->addChild('position', $ctree->lines->count());
         $line->addChild('product_id', $args[0]);
         $line->addChild('price',$ptree->price);
+        $line->addChild('quantity',1);
         
         if(!($xml = $this->serializeXML($ctree))){
             return array(
