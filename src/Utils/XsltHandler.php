@@ -63,8 +63,8 @@ class XsltHandler{
 		$this->setPostCallback('showOrder',array($this,'showOrder'));
 		
 		//set GET url callbacks
-		$this->setGetCallback('/getimage/',array($this,'getImage'));
-		$this->setGetCallback('/showcart/',array($this,'showCart'));
+		$this->setGetCallback('getimage',array($this,'getImage'));
+		$this->setGetCallback('showcart',array($this,'showCart'));
 	}
 
 	public function __destruct(){}
@@ -658,7 +658,7 @@ class XsltHandler{
         try{
             $ret = null;
             
-            if(!($callable = $this->getCallback($command))){
+            if(!($callable = $this->getCallback(strtolower($command)))){
                 return array(
                     'status'        => 500,
                     'content'       => "Command not understood",
@@ -769,7 +769,7 @@ class XsltHandler{
         return (is_array($this->_getCallbacks)) ? (isset($this->_getCallbacks[$command])) ? $this->_getCallbacks[$command] : null : null;
 	}
 	
-	public function setGetCallback($regex, $callback){
-        $this->_getCallbacks[$regex] = $callback;
+	public function setGetCallback($command, $callback){
+        $this->_getCallbacks[$command] = $callback;
 	}
 }
