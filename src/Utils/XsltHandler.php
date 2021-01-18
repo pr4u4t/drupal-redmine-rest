@@ -469,7 +469,7 @@ class XsltHandler{
                 $ch = curl_init();
 
                 // set url
-                curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/products/$id.xml?key=".$this->apiKey());
+                curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/products/$args[0].xml?key=".$this->apiKey());
 
                 //return the transfer as a string
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
