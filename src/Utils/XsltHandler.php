@@ -63,8 +63,8 @@ class XsltHandler{
 		$this->setPostCallback('showOrder',array($this,'showOrder'));
 		
 		//set GET url callbacks
-		$this->setGetCallback('/getImage/',array($this,'getImage'));
-		$this->setGetCallback('/showCart/',array($this,'showCart'));
+		$this->setGetCallback('/getimage/',array($this,'getImage'));
+		$this->setGetCallback('/showcart/',array($this,'showCart'));
 	}
 
 	public function __destruct(){}
