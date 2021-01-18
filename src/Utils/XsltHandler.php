@@ -63,7 +63,8 @@ class XsltHandler{
 		$this->setPostCallback('showOrder',array($this,'showOrder'));
 		
 		//set GET url callbacks
-		$this->setGetCallback('//',array($this,'getImage'));
+		$this->setGetCallback('/getImage/',array($this,'getImage'));
+		$this->setGetCallback('/showCart/',array($this,'showCart'));
 	}
 
 	public function __destruct(){}
@@ -161,7 +162,7 @@ class XsltHandler{
         return $id;
 	}
 	
-	protected function showCart(array $args = array(),$format = 'html'){
+	protected function showCart(array $args = array(),$format = 'xml'){
         if(!($id = $this->initCart())){
             return array(
                 'status'        => 500,
@@ -582,7 +583,7 @@ class XsltHandler{
                 return array(
                     'status'        => 500,
                     'content'       => $ret,
-                    'content_type'  => 'text/html'
+                    'content_type'  => 'text/plain'
                 );
             
             }
@@ -604,7 +605,7 @@ class XsltHandler{
         $data = null;
 		$matches = array();
 		
-		if(!isset($_GET['q']) || !is_string($_GET['q'])){
+		if(!is_string($command)){
 			return array(
                 'status'        => 400,
                 'content'       => "Failed to validate GET data",
@@ -612,15 +613,15 @@ class XsltHandler{
             );
 		}
         
-        if(!preg_match('/(attachments\/)(download\/)([0-9]+)(\/.+)/', $_GET['q'], $matches) || count($matches) != 5){
+        /*if(!preg_match('/(attachments\/)(download\/)([0-9]+)(\/.+)/', $_GET['q'], $matches) || count($matches) != 5){
 			return array(
                 'status'        => 400,
                 'content'       => "Invalid GET parameters",
                 'content_type'  => 'text/plain'
             );
-        }
+        }*/
 		
-		$options = array(
+		/*$options = array(
             CURLOPT_URL             => $this->hostAddress()."/".$matches[1].$matches[2].$matches[3]."?key=".$this->apiKey(),
             CURLOPT_FOLLOWLOCATION  => true,
             CURLOPT_RETURNTRANSFER  => true,
@@ -652,6 +653,37 @@ class XsltHandler{
         }
 
         curl_close($ch);
+        */
+        
+        try{
+            $ret = null;
+            
+            if(!($callable = $this->getCallback($command))){
+                return array(
+                    'status'        => 500,
+                    'content'       => "Command not understood",
+                    'content_type'  => 'text/plain'
+                );
+            }
+            
+            if(!($ret = call_user_func($callable,$args))){
+                return array(
+                    'status'        => 500,
+                    'content'       => $ret,
+                    'content_type'  => 'text/plain'
+                );
+            
+            }
+
+			return $ret;
+
+        }catch(Exception $e){
+            return array(
+                'status'        => 500, 
+                'content'       => $e->getMessage(),
+                'content_type'  => 'text/plain'
+            );
+        }
         
 		return $ret;
 	}
@@ -734,25 +766,7 @@ class XsltHandler{
 	}
 	
 	public function getCallback($url){
-        $matches = array();
-        $call = array(0,null);
-        
-        if(!$this->_getCallbacks || !is_array($this->_getCallbacks)){
-            return null;
-        }
-        
-        foreach($this->_getCallbacks as $regex => $callback){
-            if(!is_string($regex) || !preg_match($regex,$url,$matches)){
-                continue;
-            }
-            
-            if(count($matches[0]) > $call[0]){
-                $call[0] = count($matches[0]);
-                $call[1] = $callback;
-            }
-        }
-        
-        return $call[1];
+        return (is_array($this->_getCallbacks)) ? (isset($this->_getCallbacks[$command])) ? $this->_getCallbacks[$command] : null : null;
 	}
 	
 	public function setGetCallback($regex, $callback){
