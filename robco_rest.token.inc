@@ -46,15 +46,19 @@ function robco_rest_tokens($type, $tokens, array $data, array $options, \Drupal\
         return $replacements;
     }
    
+    if(!($tempstore = \Drupal::service('tempstore.private')->get('redmine_commerce'))){
+        return null;
+    }
+	
     foreach ($tokens as $name => $original) {
         switch ($name) {
         
             case 'deal_id':
-                $replacements[$original] = ;
+                $replacements[$original] = $tempstore->get('deal_id');
                 break;
                 
             case 'cart_id':
-                $replacements[$original] = ;
+                $replacements[$original] = $tempstore->get('cart_id');;
                 break;
            }
        }

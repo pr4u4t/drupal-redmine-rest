@@ -157,7 +157,8 @@ class XsltHandler{
             );
         }
         
-        $tempstore->set('cart_id', ($id = (string) $ctree->id));
+        $tempstore->set('cart_id', (string) $ctree->name);
+        $tempstore->set('deal_id', ($id = (string) $ctree->id));
         
         return $id;
 	}
