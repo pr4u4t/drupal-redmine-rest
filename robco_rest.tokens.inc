@@ -25,7 +25,7 @@ function robco_rest_token_info() {
                 ],
                 'cart_id' => [
                     'name'          => t('Cart ID'), 
-                    'description'   => t('Actual user ')
+                    'description'   => t('Actual user redmine cart ID if exists')
                 ]
             ]
         ]
