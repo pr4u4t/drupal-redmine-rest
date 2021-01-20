@@ -60,10 +60,8 @@ function robco_rest_tokens($type, $tokens, array $data, array $options, \Drupal\
             case 'cart_id':
                 $replacements[$original] = $tempstore->get('cart_id');;
                 break;
-           }
-       }
-   }
-
+        }
+    }
+   
    return $replacements;
-
 }
