@@ -117,19 +117,7 @@ class XsltHandler{
             // close curl resource to free up system resources
             curl_close($ch);
                 
-            if($httpcode < 200 || $httpcode >= 300){
-                return array(
-                    'status'        => 500,
-                    'content'       => 'Failed to get cart data.',
-                    'content_type'  => 'text/plain'
-                );
-            }
-                
-            return array(
-                'status'        => 200,
-                'content'       => $ret,
-                'content_type'  => 'application/xml'
-            );
+            return ($httpcode < 200 || $httpcode >= 300) ? false : true
 	}
 	
 	protected function initCart(){
@@ -137,7 +125,7 @@ class XsltHandler{
             return null;
         }
 	
-        if(($id = $tempstore->get('cart_id')) != null){
+        if((($id = $tempstore->get('cart_id')) != null) && $this->checkCart($id)){
             return $id;
         }
 	
@@ -256,22 +244,6 @@ class XsltHandler{
                     'content_type'  => 'application/xml'
                 );
         }
-        
-        /*
-        $ret = array(
-                'status'        => 500, 
-                'content'       => curl_error($ch),
-                'content_type'  => 'text/plain'
-        );
-        
-        $ret = array(
-                'status'    => 200, 
-                'content'   => $data
-        );
-            
-        $header  = curl_getinfo( $ch );
-        $ret['content_type'] = (isset($header['content_type'])) ? $header['content_type'] : null;
-        */
         
         return array(
             'status'        => 422,
