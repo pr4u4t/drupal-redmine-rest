@@ -99,6 +99,39 @@ class XsltHandler{
         return array(500,'Unprocessable request','text/plain');
 	}	
 	
+	protected function checkCart($id){
+          // create curl resource
+            $ch = curl_init();
+
+            // set url
+            curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/deals/$id.xml?key=".$this->apiKey());
+
+            //return the transfer as a string
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+            // $output contains the output string
+            $ret = curl_exec($ch);
+                
+            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                
+            // close curl resource to free up system resources
+            curl_close($ch);
+                
+            if($httpcode < 200 || $httpcode >= 300){
+                return array(
+                    'status'        => 500,
+                    'content'       => 'Failed to get cart data.',
+                    'content_type'  => 'text/plain'
+                );
+            }
+                
+            return array(
+                'status'        => 200,
+                'content'       => $ret,
+                'content_type'  => 'application/xml'
+            );
+	}
+	
 	protected function initCart(){
         if(!($tempstore = \Drupal::service('tempstore.private')->get('redmine_commerce'))){
             return null;
@@ -203,9 +236,19 @@ class XsltHandler{
 
                 // $output contains the output string
                 $ret = curl_exec($ch);
-
+                
+                $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                
                 // close curl resource to free up system resources
                 curl_close($ch);
+                
+                if($httpcode < 200 || $httpcode >= 300){
+                    return array(
+                        'status'        => 500,
+                        'content'       => 'Failed to get cart data.',
+                        'content_type'  => 'text/plain'
+                    );
+                }
                 
                 return array(
                     'status'        => 200,
