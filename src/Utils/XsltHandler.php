@@ -100,24 +100,24 @@ class XsltHandler{
 	}	
 	
 	protected function checkCart($id){
-          // create curl resource
-            $ch = curl_init();
+        // create curl resource
+        $ch = curl_init();
 
-            // set url
-            curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/deals/$id.xml?key=".$this->apiKey());
+        // set url
+        curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/deals/$id.xml?key=".$this->apiKey());
 
-            //return the transfer as a string
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        //return the transfer as a string
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-            // $output contains the output string
-            $ret = curl_exec($ch);
+        // $output contains the output string
+        $ret = curl_exec($ch);
                 
-            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 
-            // close curl resource to free up system resources
-            curl_close($ch);
+        // close curl resource to free up system resources
+        curl_close($ch);
                 
-            return ($httpcode < 200 || $httpcode >= 300) ? false : true
+        return ($httpcode < 200 || $httpcode >= 300) ? false : true;
 	}
 	
 	protected function initCart(){
