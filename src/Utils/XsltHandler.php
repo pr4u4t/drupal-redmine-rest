@@ -185,12 +185,13 @@ class XsltHandler{
 	}
 	
 	protected function showCart(array $args = array(),$format = 'xml'){
-        if(!(isset($args[0]) && ($id = $args[0])) || !($id = $this->initCart())){
-            return array(
-                'status'        => 500,
-                'content_type'  => 'text/plain',
-                'content'       => 'Failed to obtain cart'
-            );
+        if(!(isset($args[0]) && ($id = $args[0]))){
+            if(!($id = $this->initCart())){
+                return array(
+                    'status'        => 500,
+                    'content_type'  => 'text/plain',
+                    'content'       => 'Failed to obtain cart'
+                );
         }
         
         switch($format){
