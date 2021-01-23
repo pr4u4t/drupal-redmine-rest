@@ -271,7 +271,7 @@ class XsltHandler{
             );
         }
         
-        if(!is_array(($cart = $this->showCart($args,'xml'))) || !isset($cart['status']) 
+        if(!is_array(($cart = $this->showCart(array($id),'xml'))) || !isset($cart['status']) 
             || $cart['status'] < 200 || $cart['status'] >= 300){
             return array(
                 'status'        => 500,
