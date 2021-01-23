@@ -192,6 +192,7 @@ class XsltHandler{
                     'content_type'  => 'text/plain',
                     'content'       => 'Failed to obtain cart'
                 );
+            }
         }
         
         switch($format){
