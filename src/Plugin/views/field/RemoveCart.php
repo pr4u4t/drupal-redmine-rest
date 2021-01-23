@@ -15,7 +15,7 @@ use Drupal\views\Render\ViewsRenderPipelineMarkup;
  *
  * @ingroup views_field_handlers
  *
- * @ViewsField("add_cart")
+ * @ViewsField("remove_cart")
  */
 class RemoveCart extends FieldPluginBase {
 
