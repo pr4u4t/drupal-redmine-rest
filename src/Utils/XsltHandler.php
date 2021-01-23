@@ -185,7 +185,7 @@ class XsltHandler{
 	}
 	
 	protected function showCart(array $args = array(),$format = 'xml'){
-        if(!($id = $this->initCart())){
+        if(!(isset($args[0]) && ($id = $args[0])) || !($id = $this->initCart())){
             return array(
                 'status'        => 500,
                 'content_type'  => 'text/plain',
