@@ -125,7 +125,7 @@ class XsltHandler{
             return null;
         }
 	
-        if((($id = $tempstore->get('cart_id')) != null) && $tempstore->get('deal_id') != null && $this->checkCart($id)){
+        if($tempstore->get('cart_id') != null && ($id = $tempstore->get('deal_id')) != null && $this->checkCart($id)){
             return $id;
         }
 	

@@ -52,7 +52,7 @@ function robco_rest_tokens($type, $tokens, array $data, array $options, \Drupal\
 	
     foreach ($tokens as $name => $original) {
         switch ($name) {
-        
+            
             case 'deal_id':
                 $replacements[$original] = $tempstore->get('deal_id');
                 break;
@@ -63,5 +63,5 @@ function robco_rest_tokens($type, $tokens, array $data, array $options, \Drupal\
         }
     }
    
-   return $replacements;
+    return $replacements;
 }
