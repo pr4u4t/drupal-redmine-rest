@@ -58,7 +58,7 @@ function robco_rest_tokens($type, $tokens, array $data, array $options, \Drupal\
                 break;
                 
             case 'cart_id':
-                $replacements[$original] = $tempstore->get('cart_id');;
+                $replacements[$original] = $tempstore->get('cart_id');
                 break;
         }
     }
