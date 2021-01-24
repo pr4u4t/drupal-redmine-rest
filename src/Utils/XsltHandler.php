@@ -511,8 +511,11 @@ class XsltHandler{
 	}
 	
 	protected function login(array $args = array()){
-        
-	
+        return array(
+            'status'        => 200,
+            'content'       => 'Not implemented yet',
+            'content_type'  => 'text/plain'
+        );
 	}
 	
 	protected function showProfile(array $args = array()){
