@@ -511,9 +511,48 @@ class XsltHandler{
 	}
 	
 	protected function login(array $args = array()){
+        $postReq = \Drupal::request()->request->all();
+        $login = isset($postReq['login']) ? $postReq['login'] : FALSE;
+        $password = isset($postReq['password']) ? $postReq['password'] : FALSE;
+        
+        if(!$login || !$password){
+            return array(
+                'status'        => 200,
+                'content'       => 'Invalid data',
+                'content_type'  => 'text/plain'
+            );
+        }
+        
+        // create curl resource
+        $ch = curl_init();
+
+        // set url
+        $url = $this->hostAddress()."/my/account.xml";
+        curl_setopt($ch, CURLOPT_USERPWD, $login . ":" . $password);
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        //return the transfer as a string
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        // $output contains the output string
+        $ret = curl_exec($ch);
+                
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                
+        // close curl resource to free up system resources
+        curl_close($ch);
+                
+        if($httpcode < 200 || $httpcode >= 300){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to get cart data.',
+                'content_type'  => 'text/plain'
+            );
+        }
+        
         return array(
             'status'        => 200,
-            'content'       => 'Not implemented yet',
+            'content'       => 'Login successfull.',
             'content_type'  => 'text/plain'
         );
 	}
