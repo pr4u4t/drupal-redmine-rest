@@ -574,6 +574,15 @@ class XsltHandler{
 	*/
 	
 	protected function getImage(array $args = array()){
+	
+        if(!isset($args[0])){
+            return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Missing argument'
+            );
+        }
+	
         // create curl resource
         $ch = curl_init();
 
@@ -587,10 +596,19 @@ class XsltHandler{
         $ret = curl_exec($ch);
 
         $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         
         // close curl resource to free up system resources
         curl_close($ch);
-                
+        
+        if($httpcode < 200 || $httpcode >= 300){
+            return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Failed to get image from redmine..'
+            );
+        }
+        
         return array(
             'status'        => 200,
             'content'       => $ret,
