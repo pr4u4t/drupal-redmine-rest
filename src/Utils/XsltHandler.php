@@ -433,24 +433,17 @@ class XsltHandler{
             );
         }
         
-        foreach($ctree->lines as $pos => $line){
-            if(!property_exists($line,'position')){
-                continue;
-            }
-        
-            if($line->position == $args[0]){
-                unset($ctree->lines[$pos]);
-                break;
-            }
-        }
-        
-        foreach($ctree->lines as $pos => $line){
-            if(!property_exists($line,'position')){
-                continue;
-            }
-            
-            $line->position = $pos+1;
-        }
+        list($elem) = $ctree->xpath("//lines/line[position=".$args[0]."]");
+    
+        if(!is_a($elem,"SimpleXMLElement")){
+                return array(
+                        'status'        => 500,
+                        'content'       => 'Failed to find line item to remove.',
+                        'content_type'  => 'text/plain'
+                );  
+        }   
+
+        $elem[0]->addChild("_destroy","1");
         
         if(!($xml = $this->serializeXML($ctree))){
             return array(
