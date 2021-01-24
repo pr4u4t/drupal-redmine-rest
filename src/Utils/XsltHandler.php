@@ -573,6 +573,31 @@ class XsltHandler{
 	}
 	*/
 	
+	protected function getImage(array $args = array()){
+        // create curl resource
+        $ch = curl_init();
+
+        // set url
+        curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/attachments/".$args[0]."?key=".$this->apiKey());
+
+        //return the transfer as a string
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        // $output contains the output string
+        $ret = curl_exec($ch);
+
+        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        
+        // close curl resource to free up system resources
+        curl_close($ch);
+                
+        return array(
+            'status'        => 200,
+            'content'       => $ret,
+            'content_type'  => $contentType
+        );
+	}
+	
 	protected function showProduct(array $args = array(),$format = 'html'){
         switch($format){
             case 'html':
@@ -597,7 +622,7 @@ class XsltHandler{
                 $ch = curl_init();
 
                 // set url
-                curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/products/$args[0].xml?key=".$this->apiKey());
+                curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/products/".$args[0].".xml?key=".$this->apiKey());
 
                 //return the transfer as a string
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
