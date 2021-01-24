@@ -184,7 +184,7 @@ class XsltHandler{
         return $id;
 	}
 	
-	protected function showCart(array $args = array(),$format = 'xml'){
+	protected function showCart(array $args = array(),$format = 'xml',$pretty = true){
         if(!(isset($args[0]) && ($id = $args[0]))){
             if(!($id = $this->initCart())){
                 return array(
@@ -219,7 +219,11 @@ class XsltHandler{
                 $ch = curl_init();
 
                 // set url
-                curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/deals/$id.xml?key=".$this->apiKey());
+                $url = $this->hostAddress()."/deals/$id.xml?key=".$this->apiKey();
+                if($pretty){
+                    $url .= "&pretty=true";
+                }
+                curl_setopt($ch, CURLOPT_URL, );
 
                 //return the transfer as a string
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -271,7 +275,7 @@ class XsltHandler{
             );
         }
         
-        if(!is_array(($cart = $this->showCart(array($id),'xml'))) || !isset($cart['status']) 
+        if(!is_array(($cart = $this->showCart(array($id),'xml',false))) || !isset($cart['status']) 
             || $cart['status'] < 200 || $cart['status'] >= 300){
             return array(
                 'status'        => 500,
@@ -408,7 +412,7 @@ class XsltHandler{
             );
         }
         
-        if(!is_array(($cart = $this->showCart(array($id),'xml'))) || !isset($cart['status']) 
+        if(!is_array(($cart = $this->showCart(array($id),'xml',false))) || !isset($cart['status']) 
             || $cart['status'] < 200 || $cart['status'] >= 300){
             return array(
                 'status'        => 500,
