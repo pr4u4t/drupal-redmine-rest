@@ -578,7 +578,7 @@ class XsltHandler{
         $ch = curl_init();
 
         // set url
-        curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/attachments/".$args[0]."?key=".$this->apiKey());
+        curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/attachments/".$args[0]);
 
         //return the transfer as a string
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
