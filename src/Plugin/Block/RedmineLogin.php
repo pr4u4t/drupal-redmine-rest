@@ -187,7 +187,7 @@ class RedmineLogin extends BlockBase {
     	
     return [
       '#markup' => $tag,
-      '#allowed_tags' => ['script', 'div', 'span', 'ul', 'li', 'a', 'i', 'form', 'label', 'input', 'button', 'p', 'h2', 'h3'],
+      '#allowed_tags' => ['script', 'div', 'span', 'ul', 'li', 'a', 'i', 'form', 'label', 'input', 'button', 'p', 'h2', 'h3', 'style'],
     ];
   } 
 }
