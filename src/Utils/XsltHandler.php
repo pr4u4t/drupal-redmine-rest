@@ -577,7 +577,7 @@ class XsltHandler{
 	
         if(!isset($args[0])){
             return array(
-                'status'        => 500,
+                'status'        => 404,
                 'content_type'  => 'text/plain',
                 'content'       => 'Missing argument'
             );
@@ -773,53 +773,11 @@ class XsltHandler{
 		
 		if(!is_string($command)){
 			return array(
-                'status'        => 400,
+                'status'        => 500,
                 'content'       => "Failed to validate GET data",
                 'content_type'  => 'text/plain'
             );
 		}
-        
-        /*if(!preg_match('/(attachments\/)(download\/)([0-9]+)(\/.+)/', $_GET['q'], $matches) || count($matches) != 5){
-			return array(
-                'status'        => 400,
-                'content'       => "Invalid GET parameters",
-                'content_type'  => 'text/plain'
-            );
-        }*/
-		
-		/*$options = array(
-            CURLOPT_URL             => $this->hostAddress()."/".$matches[1].$matches[2].$matches[3]."?key=".$this->apiKey(),
-            CURLOPT_FOLLOWLOCATION  => true,
-            CURLOPT_RETURNTRANSFER  => true,
-            CURLOPT_USERAGENT       => $this->userAgent(),
-            CURLOPT_HEADER          => false,
-            CURLOPT_ENCODING        => "",
-            CURLOPT_AUTOREFERER     => true,
-            CURLOPT_CONNECTTIMEOUT  => 120,
-            CURLOPT_TIMEOUT         => 120,
-            CURLOPT_MAXREDIRS       => 10
-		);
-
-        $ch = curl_init();
-        curl_setopt_array( $ch, $options );
-        
-        if(($data = curl_exec($ch)) === FALSE) {
-			$ret = array(
-                'status'        => 500, 
-                'content'       => curl_error($ch),
-                'content_type'  => 'text/plain'
-            );
-        }else{
-            $ret = array(
-                'status'    => 200, 
-                'content'   => $data
-            );
-            $header  = curl_getinfo( $ch );
-            $ret['content_type'] = (isset($header['content_type'])) ? $header['content_type'] : null;
-        }
-
-        curl_close($ch);
-        */
         
         try{
             $ret = null;
@@ -835,7 +793,7 @@ class XsltHandler{
             if(!($ret = call_user_func($callable,$args))){
                 return array(
                     'status'        => 500,
-                    'content'       => $ret,
+                    'content'       => 'Failed to call handler method.',
                     'content_type'  => 'text/plain'
                 );
             
