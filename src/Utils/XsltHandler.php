@@ -400,9 +400,115 @@ class XsltHandler{
             );
         }
         
+        if(!isset($args[0])){
+            return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Product position missing.'
+            );
+        }
+        
+        if(!is_array(($cart = $this->showCart(array($id),'xml'))) || !isset($cart['status']) 
+            || $cart['status'] < 200 || $cart['status'] >= 300){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to get cart content.',
+                'content_type'  => 'text/plain'
+            );
+        }
+	
+        if(!($ctree = new \SimpleXMLElement($cart['content']))){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to parse cart content.',
+                'content_type'  => 'text/plain'
+            );
+        }
+        
+        if(!((property_exists($ctree,'lines') && is_a(($lines = $ctree->lines),"SimpleXMLElement")))){
+           return array(
+                'status'        => 500,
+                'content'       => 'Failed to get cart lines.',
+                'content_type'  => 'text/plain'
+            );
+        }
+        
+        foreach($ctree->lines as $pos => $line){
+            if(!property_exists($line,'position')){
+                continue;
+            }
+        
+            if($line->position == $args[0]){
+                unset($ctree->lines[$pos]);
+                break;
+            }
+        }
+        
+        foreach($ctree->lines as $pos => $line){
+            if(!property_exists($line,'position')){
+                continue;
+            }
+            
+            $line->position = $pos+1;
+        }
+        
+        if(!($xml = $this->serializeXML($ctree))){
+            return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Failed to prepare cart data.'
+            );
+        }
+        
+        $header = array(
+            "Content-type: application/xml",
+            "Content-length: " . strlen($xml),
+            "Connection: close"
+        );
+        
+        $options = array(
+            CURLOPT_CUSTOMREQUEST   => "PUT",
+            CURLOPT_POST            => false,
+            CURLOPT_HTTPGET         => false,
+            CURLOPT_URL             => $this->hostAddress()."/deals/".$id.".xml?key=".$this->apiKey(),
+            CURLOPT_FOLLOWLOCATION  => true,
+            CURLOPT_RETURNTRANSFER  => true,
+            CURLOPT_USERAGENT       => $this->userAgent(),
+            CURLOPT_HEADER          => false,
+            CURLOPT_ENCODING        => "",
+            CURLOPT_AUTOREFERER     => true,
+            CURLOPT_CONNECTTIMEOUT  => 120,
+            CURLOPT_TIMEOUT         => 120,
+            CURLOPT_MAXREDIRS       => 10,
+            CURLOPT_POSTFIELDS      => $xml,
+            CURLOPT_HTTPHEADER      => $header
+		);
+
+        $ch = curl_init();
+        curl_setopt_array( $ch, $options );
+        
+        if(($data = curl_exec($ch)) === FALSE) {
+			return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Failed to send data to redmine ('.curl_error($ch).')'
+			);
+        }
+
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if($httpcode < 200 || $httpcode >= 300){
+            return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Invalid response code when removing line item.'
+            );
+        }
+        
         return array(
             'status'        => 200,
-            'content'       => 'Not implemented yet',
+            'content'       => 'Line item removed.',
             'content_type'  => 'text/plain'
         );
 	}
