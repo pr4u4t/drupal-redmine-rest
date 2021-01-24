@@ -550,10 +550,43 @@ class XsltHandler{
             );
         }
         
+        if(!($ctree = new \SimpleXMLElement($ret))){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to parse account content.',
+                'content_type'  => 'text/plain'
+            );
+        }
+        
+        if(!property_exists($ctree,'api_key')){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to obtain api-key.',
+                'content_type'  => 'text/plain'
+            );
+        }
+        
+        if(!property_exists($ctree,'login')){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to obtain login.',
+                'content_type'  => 'text/plain'
+            );
+        }
+        
+        if(!($tempstore = \Drupal::service('tempstore.private')->get('redmine_commerce'))){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to obtain tempstore.',
+                'content_type'  => 'text/plain'
+            );
+        }
+        
+        $tempstore->set('login', (string) $ctree->login);
+        $tempstore->set('api_key', ($id = (string) $ctree->api_key));
+        
         return array(
-            'status'        => 200,
-            'content'       => 'Login successfull.',
-            'content_type'  => 'text/plain'
+            'redirect'        => '<front>',
         );
 	}
 	
