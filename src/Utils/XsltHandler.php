@@ -51,7 +51,7 @@ class XsltHandler{
 		//set POST command callbacks
 		$this->setPostCallback('showCart',array($this,'showCart'));
 		$this->setPostCallback('addCartItem',array($this,'addCartItem'));
-		$this->setPostCallback('removeCartItem',array($this,'removeCartItem'));
+		$this->setPostCallback('delCartItem',array($this,'removeCartItem'));
 		$this->setPostCallback('showProfile',array($this,'showProfile'));
 		$this->setPostCallback('updateProfile',array($this,'updateProfile'));
 		$this->setPostCallback('showTickets',array($this,'showTickets'));
