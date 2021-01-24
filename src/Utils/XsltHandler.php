@@ -223,7 +223,7 @@ class XsltHandler{
                 if($pretty){
                     $url .= "&pretty=true";
                 }
-                curl_setopt($ch, CURLOPT_URL, );
+                curl_setopt($ch, CURLOPT_URL, $url);
 
                 //return the transfer as a string
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
