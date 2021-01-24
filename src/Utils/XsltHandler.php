@@ -61,7 +61,7 @@ class XsltHandler{
 		$this->setPostCallback('showProduct',array($this,'showProduct'));
         $this->setPostCallback('showOrders',array($this,'showOrders'));
 		$this->setPostCallback('showOrder',array($this,'showOrder'));
-		
+		$this->setPostCallback('login',array($this,'login'));
 		//set GET url callbacks
 		$this->setGetCallback('getimage',array($this,'getImage'));
 		$this->setGetCallback('showcart',array($this,'showCart'));
@@ -508,6 +508,11 @@ class XsltHandler{
             'content'       => 'Line item removed.',
             'content_type'  => 'text/plain'
         );
+	}
+	
+	protected function login(array $args = array()){
+        
+	
 	}
 	
 	protected function showProfile(array $args = array()){

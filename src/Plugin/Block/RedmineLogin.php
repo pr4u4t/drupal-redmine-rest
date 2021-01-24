@@ -103,7 +103,7 @@ class RedmineLogin extends BlockBase {
                     </div>
                     <hr>
                     <h3 class="h6 font-weight-semibold opacity-70 pt-4 pb-2">Or using form below</h3>
-                    <form class="needs-validation" novalidate="">
+                    <form class="needs-validation" novalidate="" method="post" action="/robco_rest/login">
                         <div class="input-group form-group">
                             <div class="input-group-prepend"><span class="input-group-text"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span></div>
                             <input class="form-control" type="email" placeholder="Email" required="">
