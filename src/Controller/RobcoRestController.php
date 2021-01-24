@@ -48,7 +48,7 @@ class RobcoRestController extends ControllerBase {
     if(!($ret = $handler->handle($command,$args)) || !is_array($ret) || !isset($ret['status']) 
         || !isset($ret['content']) || !isset($ret['content_type'])){
         
-        if(isset($ret['redirect']){
+        if(isset($ret['redirect'])) {
             return $this->redirect($ret['redirect']);
         }
         
