@@ -50,6 +50,12 @@ class RobcoRestController extends ControllerBase {
         return new Response('Internal server error',500,array('content-type' => 'text/plain'));
     }
     
-    return new Response($ret['content'], $ret['status'], array('content-type' => $ret['content_type']));
+    $headerBag = array( 'content-type' => $ret['content_type']);
+    
+    if(isset($ret['content_length']) && $ret['content_length'] > 0){
+        $headerBag['content-length'] = $ret['content_length'];
+    }
+    
+    return new Response($ret['content'], $ret['status'], $headerBag);
   }
 }

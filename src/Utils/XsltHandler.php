@@ -587,7 +587,7 @@ class XsltHandler{
         $ch = curl_init();
 
         // set url
-        curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/attachments/".$args[0]);
+        curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/attachments/download/".$args[0]);
 
         //return the transfer as a string
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -597,6 +597,7 @@ class XsltHandler{
 
         $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $contentLength = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
         
         // close curl resource to free up system resources
         curl_close($ch);
@@ -610,9 +611,10 @@ class XsltHandler{
         }
         
         return array(
-            'status'        => 200,
-            'content'       => $ret,
-            'content_type'  => $contentType
+            'status'            => 200,
+            'content'           => $ret,
+            'content_type'      => $contentType,
+            'content_length'    => $contentLength
         );
 	}
 	
