@@ -1,5 +1,5 @@
 robco_rest.command:
-  path: '/robco_rest/{command}/{arg1}/{arg2}/{arg3}/{arg4}'
+  path: '/robco_rest/c/{command}/{arg1}/{arg2}/{arg3}/{arg4}'
   defaults:
     _controller: '\Drupal\robco_rest\Controller\RobcoRestController::command'
     arg1: null
@@ -8,19 +8,19 @@ robco_rest.command:
     arg4: null
   requirements:
     _permission: 'robco access cart+robco access products+robco access profile+robco access tickets'
-  methods: [POST,GET]
+  methods: [POST]
 
-#robco_rest.command_with_arguments:
-#  path: '/robco_rest/{command}/{arg1}/{arg2}/{arg3}/{arg4}'
-#  defaults:
-#    _controller: '\Drupal\robco_rest\Controller\RobcoRest::command'
-#    arg1: null
-#    arg2: null
-#    arg3: null
-#    arg4: null
-#  requirements:
-#    _permission: 'robco access cart+robco access products+robco access profile+robco access tickets'
-#  methods: [GET]
+robco_rest.page:
+  path: '/robco_rest/state/{command}/{arg1}/{arg2}/{arg3}/{arg4}'
+  defaults:
+    _controller: '\Drupal\robco_rest\Controller\RobcoRest::command'
+    arg1: null
+    arg2: null
+    arg3: null
+    arg4: null
+  requirements:
+    _permission: 'robco access cart+robco access products+robco access profile+robco access tickets'
+  methods: [GET]
   
 robco_rest.settings:
   path: '/admin/config/development/robco_reset'

@@ -3,6 +3,7 @@
 namespace Drupal\robco_rest\Utils;
 
 use Drupal\Component\Utility\Random;
+use Symfony\Component\HttpFoundation\Request;
 
 class XsltHandler{
 	private $_apiKey;
@@ -99,50 +100,72 @@ class XsltHandler{
         return array(500,'Unprocessable request','text/plain');
 	}	
 	
-	protected function checkCart($id){
-        // create curl resource
-        $ch = curl_init();
-
-        // set url
-        curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/deals/$id.xml?key=".$this->apiKey());
-
-        //return the transfer as a string
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        // $output contains the output string
-        $ret = curl_exec($ch);
-                
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                
-        // close curl resource to free up system resources
-        curl_close($ch);
-                
-        return ($httpcode < 200 || $httpcode >= 300) ? false : true;
+	protected function getAuthCookie(){
+        $request = Request::createFromGlobals();
+        
+        $ret['deal_id'] = $request->cookies->get('robco_rest.deal_id');
+        $ret['session'] = $request->cookies->get('robco_rest.session');
+        $ret['auth']    = $request->cookies->get('robco_rest.auth');
+        
+        return $ret;
 	}
 	
-	protected function initCart(){
-        if(!($tempstore = \Drupal::service('tempstore.private')->get('redmine_commerce'))){
-            return null;
-        }
-	
-        if($tempstore->get('cart_id') != null && ($id = $tempstore->get('deal_id')) != null && $this->checkCart($id)){
-            return $id;
-        }
-	
-        $rand = new Random();
-        $id = $rand->name(16,true);
-        $id = "cart-$id";
-        $xml = '<deal><project_id>'.$this->projectID().'</project_id><name>'.$id.'</name><contact_id>'.$this->defaultCartOwner().'</contact_id></deal>';
+	protected function getWebsite($url, $cookiesIn = '',$user = null, $password = null){
+        $options = array(
+            CURLOPT_RETURNTRANSFER => true,     // return web page
+            CURLOPT_HEADER         => true,     //return headers in addition to content
+            CURLOPT_FOLLOWLOCATION => true,     // follow redirects
+            CURLOPT_ENCODING       => "",       // handle all encodings
+            CURLOPT_AUTOREFERER    => true,     // set referer on redirect
+            CURLOPT_CONNECTTIMEOUT => 120,      // timeout on connect
+            CURLOPT_TIMEOUT        => 120,      // timeout on response
+            CURLOPT_MAXREDIRS      => 10,       // stop after 10 redirects
+            CURLINFO_HEADER_OUT    => true,
+            CURLOPT_SSL_VERIFYPEER => true,     // Validate SSL Certificates
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_COOKIE         => $cookiesIn
+        );
+
+        $ch      = curl_init( $url );
+        curl_setopt_array( $ch, $options );
         
+        if($user !== null && $password !== null){
+            curl_setopt($ch, CURLOPT_USERPWD, $user . ":" . $password);
+        }
+        
+        $rough_content = curl_exec( $ch );
+        $err     = curl_errno( $ch );
+        $errmsg  = curl_error( $ch );
+        $header  = curl_getinfo( $ch );
+        curl_close( $ch );
+
+        $header_content = substr($rough_content, 0, $header['header_size']);
+        $body_content = trim(str_replace($header_content, '', $rough_content));
+        $pattern = "#Set-Cookie:\\s+(?<cookie>[^=]+=[^;]+)#m"; 
+        preg_match_all($pattern, $header_content, $matches); 
+        $cookiesOut = implode("; ", $matches['cookie']);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        
+        $header['errno']   = $err;
+        $header['errmsg']  = $errmsg;
+        $header['headers']  = $header_content;
+        $header['content'] = $body_content;
+        $header['cookies'] = $cookiesOut;
+        $header['status'] = $httpcode;
+        
+        return $header;
+	}
+	
+	protected function postRequest($url, $data, $cookiesIn = '',$content_type = ''){
         $header = array(
-            "Content-type: application/xml",
+            "Content-type: ".$content_type,
             "Content-length: " . strlen($xml),
             "Connection: close"
         );
         
         $options = array(
             CURLOPT_POST            => true,
-            CURLOPT_URL             => $this->hostAddress()."/deals.xml?key=".$this->apiKey(),
+            CURLOPT_URL             => $uri,
             CURLOPT_FOLLOWLOCATION  => true,
             CURLOPT_RETURNTRANSFER  => true,
             CURLOPT_USERAGENT       => $this->userAgent(),
@@ -152,14 +175,14 @@ class XsltHandler{
             CURLOPT_CONNECTTIMEOUT  => 120,
             CURLOPT_TIMEOUT         => 120,
             CURLOPT_MAXREDIRS       => 10,
-            CURLOPT_POSTFIELDS      => $xml,
+            CURLOPT_POSTFIELDS      => $data,
             CURLOPT_HTTPHEADER      => $header
 		);
 
         $ch = curl_init();
         curl_setopt_array( $ch, $options );
         
-        if(($data = curl_exec($ch)) === FALSE) {
+        if(($ret = curl_exec($ch)) === FALSE) {
 			return null;
         }
 
@@ -170,6 +193,68 @@ class XsltHandler{
             return null;
         }
         
+        
+	}
+	
+	protected function putRequest($url, $data, $cookiesIn = '', $content_type){
+        $header = array(
+            "Content-type: application/xml",
+            "Content-length: " . strlen($data),
+            "Connection: close"
+        );
+        
+        $options = array(
+            CURLOPT_CUSTOMREQUEST   => "PUT",
+            CURLOPT_POST            => false,
+            CURLOPT_HTTPGET         => false,
+            CURLOPT_URL             => $url, //$this->hostAddress()."/deals/".$id.".xml?key=".$this->apiKey()
+            CURLOPT_FOLLOWLOCATION  => true,
+            CURLOPT_RETURNTRANSFER  => true,
+            CURLOPT_USERAGENT       => $this->userAgent(),
+            CURLOPT_HEADER          => false,
+            CURLOPT_ENCODING        => "",
+            CURLOPT_AUTOREFERER     => true,
+            CURLOPT_CONNECTTIMEOUT  => 120,
+            CURLOPT_TIMEOUT         => 120,
+            CURLOPT_MAXREDIRS       => 10,
+            CURLOPT_POSTFIELDS      => $data,
+            CURLOPT_HTTPHEADER      => $header
+		);
+
+        $ch = curl_init();
+        curl_setopt_array( $ch, $options );
+        
+        if(($data = curl_exec($ch)) === FALSE) {
+			return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Failed to send data to redmine ('.curl_error($ch).')'
+			);
+        }
+
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+	}
+	
+	protected function checkCart($id){
+        $ret = $this->getWebsite($this->hostAddress()."/deals/$id.xml?key=".$this->apiKey());
+        return ($ret['status'] < 200 || $ret['status'] >= 300) ? false : true;
+	}
+	
+	protected function initCart(){
+        $sess = $this->getAuthCookie();
+    
+        if($this->checkCart($sess['deal_id'])){
+            return $sess['deal_id'];
+        }
+        
+        $rand = new Random();
+        $id = $rand->name(16,true);
+        $id = "cart-$id";
+        $xml = '<deal><project_id>'.$this->projectID().'</project_id><name>'.$id.'</name><contact_id>'.$this->defaultCartOwner().'</contact_id></deal>';
+        
+        $this->postRequest($this->hostAddress()."/deals.xml?key=".$this->apiKey(),$xml,/*COOKIES*/,'application/xml');
+        
         if(!($ctree = new \SimpleXMLElement($data)) || !property_exists($ctree,'id')){
             return array(
                 'status'        => 500,
@@ -178,21 +263,22 @@ class XsltHandler{
             );
         }
         
-        $tempstore->set('cart_id', (string) $ctree->name);
-        $tempstore->set('deal_id', ($id = (string) $ctree->id));
+        $response = new Response();
+        $cookie = new Cookie('redmine_commerce.deal_id',($id = (string) $ctree->id), 0, '/' , NULL, FALSE);
+        $response->headers->setCookie($cookie);
+        $response->send();
         
         return $id;
 	}
 	
 	protected function showCart(array $args = array(),$format = 'xml',$pretty = true){
-        if(!(isset($args[0]) && ($id = $args[0]))){
-            if(!($id = $this->initCart())){
-                return array(
-                    'status'        => 500,
-                    'content_type'  => 'text/plain',
-                    'content'       => 'Failed to obtain cart'
-                );
-            }
+        
+        if(!($id = $this->initCart())){
+            return array(
+                'status'        => 500,
+                'content_type'  => 'text/plain',
+                'content'       => 'Failed to obtain cart'
+            );
         }
         
         switch($format){
@@ -215,26 +301,13 @@ class XsltHandler{
         
         
             case 'xml':
-                // create curl resource
-                $ch = curl_init();
-
                 // set url
                 $url = $this->hostAddress()."/deals/$id.xml?key=".$this->apiKey();
                 if($pretty){
                     $url .= "&pretty=true";
                 }
-                curl_setopt($ch, CURLOPT_URL, $url);
-
-                //return the transfer as a string
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-                // $output contains the output string
-                $ret = curl_exec($ch);
                 
-                $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                
-                // close curl resource to free up system resources
-                curl_close($ch);
+                $this->getWebsite($url);
                 
                 if($httpcode < 200 || $httpcode >= 300){
                     return array(
@@ -342,43 +415,7 @@ class XsltHandler{
             );
         }
         
-        $header = array(
-            "Content-type: application/xml",
-            "Content-length: " . strlen($xml),
-            "Connection: close"
-        );
-        
-        $options = array(
-            CURLOPT_CUSTOMREQUEST   => "PUT",
-            CURLOPT_POST            => false,
-            CURLOPT_HTTPGET         => false,
-            CURLOPT_URL             => $this->hostAddress()."/deals/".$id.".xml?key=".$this->apiKey(),
-            CURLOPT_FOLLOWLOCATION  => true,
-            CURLOPT_RETURNTRANSFER  => true,
-            CURLOPT_USERAGENT       => $this->userAgent(),
-            CURLOPT_HEADER          => false,
-            CURLOPT_ENCODING        => "",
-            CURLOPT_AUTOREFERER     => true,
-            CURLOPT_CONNECTTIMEOUT  => 120,
-            CURLOPT_TIMEOUT         => 120,
-            CURLOPT_MAXREDIRS       => 10,
-            CURLOPT_POSTFIELDS      => $xml,
-            CURLOPT_HTTPHEADER      => $header
-		);
-
-        $ch = curl_init();
-        curl_setopt_array( $ch, $options );
-        
-        if(($data = curl_exec($ch)) === FALSE) {
-			return array(
-                'status'        => 500,
-                'content_type'  => 'text/plain',
-                'content'       => 'Failed to send data to redmine ('.curl_error($ch).')'
-			);
-        }
-
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        $this->putRequest($this->hostAddress()."/deals/".$id.".xml?key=".$this->apiKey(),$xml);
         
         if($httpcode < 200 || $httpcode >= 300){
             return array(
@@ -457,43 +494,7 @@ class XsltHandler{
             );
         }
         
-        $header = array(
-            "Content-type: application/xml",
-            "Content-length: " . strlen($xml),
-            "Connection: close"
-        );
-        
-        $options = array(
-            CURLOPT_CUSTOMREQUEST   => "PUT",
-            CURLOPT_POST            => false,
-            CURLOPT_HTTPGET         => false,
-            CURLOPT_URL             => $this->hostAddress()."/deals/".$id.".xml?key=".$this->apiKey(),
-            CURLOPT_FOLLOWLOCATION  => true,
-            CURLOPT_RETURNTRANSFER  => true,
-            CURLOPT_USERAGENT       => $this->userAgent(),
-            CURLOPT_HEADER          => false,
-            CURLOPT_ENCODING        => "",
-            CURLOPT_AUTOREFERER     => true,
-            CURLOPT_CONNECTTIMEOUT  => 120,
-            CURLOPT_TIMEOUT         => 120,
-            CURLOPT_MAXREDIRS       => 10,
-            CURLOPT_POSTFIELDS      => $xml,
-            CURLOPT_HTTPHEADER      => $header
-		);
-
-        $ch = curl_init();
-        curl_setopt_array( $ch, $options );
-        
-        if(($data = curl_exec($ch)) === FALSE) {
-			return array(
-                'status'        => 500,
-                'content_type'  => 'text/plain',
-                'content'       => 'Failed to send data to redmine ('.curl_error($ch).')'
-			);
-        }
-
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        $this->putRequest($this->hostAddress()."/deals/".$id.".xml?key=".$this->apiKey(),$xml);
         
         if($httpcode < 200 || $httpcode >= 300){
             return array(
@@ -511,6 +512,7 @@ class XsltHandler{
 	}
 	
 	protected function login(array $args = array()){
+	
         $postReq = \Drupal::request()->request->all();
         $login = isset($postReq['login']) ? $postReq['login'] : FALSE;
         $password = isset($postReq['password']) ? $postReq['password'] : FALSE;
@@ -523,24 +525,7 @@ class XsltHandler{
             );
         }
         
-        // create curl resource
-        $ch = curl_init();
-
-        // set url
-        $url = $this->hostAddress()."/my/account.xml";
-        curl_setopt($ch, CURLOPT_USERPWD, $login . ":" . $password);
-        curl_setopt($ch, CURLOPT_URL, $url);
-
-        //return the transfer as a string
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        // $output contains the output string
-        $ret = curl_exec($ch);
-                
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                
-        // close curl resource to free up system resources
-        curl_close($ch);
+        $this->getWebsite($this->hostAddress()."/my/account.xml",null,$login,$password);
                 
         if($httpcode < 200 || $httpcode >= 300){
             return array(
@@ -574,7 +559,7 @@ class XsltHandler{
             );
         }
         
-        if(!($tempstore = \Drupal::service('tempstore.private')->get('redmine_commerce'))){
+        /*if(!($tempstore = \Drupal::service('tempstore.private')->get('redmine_commerce'))){
             return array(
                 'status'        => 500,
                 'content'       => 'Failed to obtain tempstore.',
@@ -583,7 +568,8 @@ class XsltHandler{
         }
         
         $tempstore->set('login', (string) $ctree->login);
-        $tempstore->set('api_key', ($id = (string) $ctree->api_key));
+        //$tempstore->set('api_key', ($id = (string) $ctree->api_key));
+        */
         
         return array(
             'redirect'        => '<front>',
