@@ -260,7 +260,9 @@ class XsltHandler{
         $id = "cart-$id";
         $xml = '<deal><project_id>'.$this->projectID().'</project_id><name>'.$id.'</name><contact_id>'.$this->defaultCartOwner().'</contact_id></deal>';
         
-        $this->postRequest($this->hostAddress()."/deals.xml?key=".$this->apiKey(),$xml,/*COOKIES*/,'application/xml');
+        if(!($cart = $this->postRequest($this->hostAddress()."/deals.xml?key=".$this->apiKey(),$xml,/*COOKIES*/,'application/xml'))){
+            return array();
+        }
         
         if(!($ctree = new \SimpleXMLElement($data)) || !property_exists($ctree,'id')){
             return array(
@@ -310,13 +312,12 @@ class XsltHandler{
             case 'xml':
                 // set url
                 $url = $this->hostAddress()."/deals/$id.xml?key=".$this->apiKey();
+                
                 if($pretty){
                     $url .= "&pretty=true";
                 }
                 
-                $this->getRequest($url);
-                
-                if($httpcode < 200 || $httpcode >= 300){
+                if(!($cart = $this->getRequest($url)) || $cart['status'] < 200 || $cart['status'] >= 300){
                     return array(
                         'status'        => 500,
                         'content'       => 'Failed to get cart data.',
@@ -422,9 +423,9 @@ class XsltHandler{
             );
         }
         
-        $this->putRequest($this->hostAddress()."/deals/".$id.".xml?key=".$this->apiKey(),$xml);
+        $resp = $this->putRequest($this->hostAddress()."/deals/".$id.".xml?key=".$this->apiKey(),$xml);
         
-        if($httpcode < 200 || $httpcode >= 300){
+        if($resp['status'] < 200 || $resp['status'] >= 300){
             return array(
                 'status'        => 500,
                 'content_type'  => 'text/plain',
@@ -501,9 +502,8 @@ class XsltHandler{
             );
         }
         
-        $this->putRequest($this->hostAddress()."/deals/".$id.".xml?key=".$this->apiKey(),$xml);
-        
-        if($httpcode < 200 || $httpcode >= 300){
+        if(!($resp = $this->putRequest($this->hostAddress()."/deals/".$id.".xml?key=".$this->apiKey(),$xml)) 
+            || $resp['status'] < 200 || $resp['status'] >= 300){
             return array(
                 'status'        => 500,
                 'content_type'  => 'text/plain',
@@ -531,16 +531,9 @@ class XsltHandler{
                 'content_type'  => 'text/plain'
             );
         }
-        
-        if(!($account = $this->getRequest($this->hostAddress()."/my/account.xml",null,$login,$password))){
-            return array(
-                'status'        => 500,
-                'content'       => 'Account data null.',
-                'content_type'  => 'text/plain'
-            );
-        }
                 
-        if($account['status'] < 200 || $account['status'] >= 300){
+        if(!($account = $this->getRequest($this->hostAddress()."/my/account.xml",null,$login,$password)) 
+            || $account['status'] < 200 || $account['status'] >= 300){
             return array(
                 'status'        => 500,
                 'content'       => 'Failed to get account data.',
@@ -662,9 +655,8 @@ class XsltHandler{
             );
         }
         
-        $image = $this->getRequest($this->hostAddress()."/attachments/download/".$args[0]); /*, $cookiesIn = '',$user = null, $password = null);*/
-        
-        if($image['status'] < 200 || $image['status'] >= 300){
+        if(!($image = $this->getRequest($this->hostAddress()."/attachments/download/".$args[0])) 
+            || $image['status'] < 200 || $image['status'] >= 300){
             return array(
                 'status'        => 500,
                 'content_type'  => 'text/plain',
@@ -700,24 +692,18 @@ class XsltHandler{
         
         
             case 'xml':
-                // create curl resource
-                $ch = curl_init();
-
-                // set url
-                curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/products/".$args[0].".xml?key=".$this->apiKey());
-
-                //return the transfer as a string
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-                // $output contains the output string
-                $ret = curl_exec($ch);
-
-                // close curl resource to free up system resources
-                curl_close($ch);
+                if(!($product = $this->getRequest($this->hostAddress()."/products/".$args[0].".xml?key=".$this->apiKey())) 
+                    || $product['status'] < 200 || $product['status'] >= 300){
+                    return array(
+                        'status'        => 500,
+                        'content_type'  => 'text/plain',
+                        'content'       => 'Failed to get image from redmine..'
+                    );
+                }
                 
                 return array(
                     'status'        => 200,
-                    'content'       => $ret,
+                    'content'       => $product['content'],
                     'content_type'  => 'application/xml'
                 );
         }
