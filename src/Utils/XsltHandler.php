@@ -137,6 +137,9 @@ class XsltHandler{
         $err     = curl_errno( $ch );
         $errmsg  = curl_error( $ch );
         $header  = curl_getinfo( $ch );
+        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        $contentLength = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close( $ch );
 
         $header_content = substr($rough_content, 0, $header['header_size']);
@@ -144,16 +147,20 @@ class XsltHandler{
         $pattern = "#Set-Cookie:\\s+(?<cookie>[^=]+=[^;]+)#m"; 
         preg_match_all($pattern, $header_content, $matches); 
         $cookiesOut = implode("; ", $matches['cookie']);
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         
-        $header['errno']   = $err;
-        $header['errmsg']  = $errmsg;
-        $header['headers']  = $header_content;
-        $header['content'] = $body_content;
-        $header['cookies'] = $cookiesOut;
-        $header['status'] = $httpcode;
         
-        return $header;
+        $ret = [
+            'errno'             => $err,
+            'errmsg'            => $errmsg,
+            'headers'           => $header_content,
+            'content'           => $body_content,
+            'cookies'           => $cookiesOut,
+            'status'            => $httpcode,
+            'content-type'      => $contentType,
+            'content-length'    => $contentLength
+        ];
+        
+        return $ret;
 	}
 	
 	protected function postRequest($url, $data, $cookiesIn = '',$content_type = ''){
@@ -525,12 +532,18 @@ class XsltHandler{
             );
         }
         
-        $this->getWebsite($this->hostAddress()."/my/account.xml",null,$login,$password);
-                
-        if($httpcode < 200 || $httpcode >= 300){
+        if(!($account = $this->getWebsite($this->hostAddress()."/my/account.xml",null,$login,$password))){
             return array(
                 'status'        => 500,
-                'content'       => 'Failed to get cart data.',
+                'content'       => 'Account data null.',
+                'content_type'  => 'text/plain'
+            );
+        }
+                
+        if($account['status'] < 200 || $account['status'] >= 300){
+            return array(
+                'status'        => 500,
+                'content'       => 'Failed to get account data.',
                 'content_type'  => 'text/plain'
             );
         }
@@ -648,27 +661,10 @@ class XsltHandler{
                 'content'       => 'Missing argument'
             );
         }
-	
-        // create curl resource
-        $ch = curl_init();
-
-        // set url
-        curl_setopt($ch, CURLOPT_URL, $this->hostAddress()."/attachments/download/".$args[0]."?key=".$this->apiKey());
-
-        //return the transfer as a string
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        // $output contains the output string
-        $ret = curl_exec($ch);
-
-        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $contentLength = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
         
-        // close curl resource to free up system resources
-        curl_close($ch);
+        $image = $this->getWebsite($this->hostAddress()."/attachments/download/".$args[0]); /*, $cookiesIn = '',$user = null, $password = null);*/
         
-        if($httpcode < 200 || $httpcode >= 300){
+        if($image['status'] < 200 || $image['status'] >= 300){
             return array(
                 'status'        => 500,
                 'content_type'  => 'text/plain',
@@ -678,9 +674,9 @@ class XsltHandler{
         
         return array(
             'status'            => 200,
-            'content'           => $ret,
-            'content_type'      => $contentType,
-            'content_length'    => $contentLength
+            'content'           => $image['content'],
+            'content_type'      => $image['content-type'],
+            'content_length'    => $image['content-length']
         );
 	}
 	

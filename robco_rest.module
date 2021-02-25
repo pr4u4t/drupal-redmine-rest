@@ -28,32 +28,14 @@ phrases and it\'ll do the rest.</p>
   }
 }
 
+function robco_rest_page_attachments(&$page) {
+    $robco_rest_token = [
+        '#tag' => 'meta',
+        '#attributes' => [
+          'name' => 'robco_rest_token',
+          'content' => 'XXX',
+        ],
+      ];
+  $page['#attached']['html_head'][] = [$robco_rest_token, 'robco_rest_token'];
 
-/**
- * Implements hook_views_data().
- */
-/*function custom_module_views_data() {
-  $data['views']['table']['group'] = t('Custom Global');
-  $data['views']['table']['join'] = [
-    // #global is a special flag which allows a table to appear all the time.
-    '#global' => [],
-  ];
-
-  $data['views']['add_to_cart_views_field'] = [
-    'title' => t('Add to cart'),
-    'help' => t('Place product in the cart.'),
-    'field' => [
-      'id' => 'add_to_cart_views_field',
-    ],
-  ];
-  
-  $data['views']['remove_from_cart_views_field'] = [
-    'title' => t('Remove cart'),
-    'help' => t('Remove product from the cart.'),
-    'field' => [
-      'id' => 'remove_from_cart_views_field',
-    ],
-  ];
-  
-  return $data;
-}*/
+}
