@@ -110,7 +110,7 @@ class XsltHandler{
         return $ret;
 	}
 	
-	protected function getWebsite($url, $cookiesIn = '',$user = null, $password = null){
+	protected function getRequest($url, $cookiesIn = '',$user = null, $password = null){
         $options = array(
             CURLOPT_RETURNTRANSFER => true,     // return web page
             CURLOPT_HEADER         => true,     //return headers in addition to content
@@ -244,7 +244,7 @@ class XsltHandler{
 	}
 	
 	protected function checkCart($id){
-        $ret = $this->getWebsite($this->hostAddress()."/deals/$id.xml?key=".$this->apiKey());
+        $ret = $this->getRequest($this->hostAddress()."/deals/$id.xml?key=".$this->apiKey());
         return ($ret['status'] < 200 || $ret['status'] >= 300) ? false : true;
 	}
 	
@@ -314,7 +314,7 @@ class XsltHandler{
                     $url .= "&pretty=true";
                 }
                 
-                $this->getWebsite($url);
+                $this->getRequest($url);
                 
                 if($httpcode < 200 || $httpcode >= 300){
                     return array(
@@ -532,7 +532,7 @@ class XsltHandler{
             );
         }
         
-        if(!($account = $this->getWebsite($this->hostAddress()."/my/account.xml",null,$login,$password))){
+        if(!($account = $this->getRequest($this->hostAddress()."/my/account.xml",null,$login,$password))){
             return array(
                 'status'        => 500,
                 'content'       => 'Account data null.',
@@ -662,7 +662,7 @@ class XsltHandler{
             );
         }
         
-        $image = $this->getWebsite($this->hostAddress()."/attachments/download/".$args[0]); /*, $cookiesIn = '',$user = null, $password = null);*/
+        $image = $this->getRequest($this->hostAddress()."/attachments/download/".$args[0]); /*, $cookiesIn = '',$user = null, $password = null);*/
         
         if($image['status'] < 200 || $image['status'] >= 300){
             return array(
