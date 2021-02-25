@@ -15,7 +15,7 @@
                 
                 $this->setPrivateKey($tmp);
                 
-                if(!($tmp = openssl_pkey_get_public($tmp);)){
+                if(!($tmp = openssl_pkey_get_public($tmp))){
                     throw new Exception("Failed to initialize public key");
                 }
                 
@@ -41,8 +41,14 @@
             if(!$this->publicKey() || !$this->privateKey()){
                 return false;
             }
+            
+            $encrypted = $data;
 		
-             return openssl_private_encrypt($data, string &$encrypted_data , OpenSSLAsymmetricKey|OpenSSLCertificate|array|string $private_key , int $padding = OPENSSL_PKCS1_PADDING );
+            if(!openssl_private_encrypt($data, $encrypted, $this->privateKey())){
+                return false;
+            }
+            
+            return $this->xor_otp($encrypted,$token);
 		}
 		
 		protected function decrypt($data, $token){
@@ -53,8 +59,10 @@
             $decrypted = null;
             
             if(!openssl_public_decrypt($data, $decrypted, $this->publicKey())){
-            
+                return false;
             }
+            
+            return $this->xor_otp($decrypted,$token);
 		}
 
         protected function xor_otp($input, $otp){
