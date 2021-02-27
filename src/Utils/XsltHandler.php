@@ -260,7 +260,7 @@ class XsltHandler{
         $id = "cart-$id";
         $xml = '<deal><project_id>'.$this->projectID().'</project_id><name>'.$id.'</name><contact_id>'.$this->defaultCartOwner().'</contact_id></deal>';
         
-        if(!($cart = $this->postRequest($this->hostAddress()."/deals.xml?key=".$this->apiKey(),$xml,/*COOKIES*/,'application/xml'))){
+        if(!($cart = $this->postRequest($this->hostAddress()."/deals.xml?key=".$this->apiKey(),$xml,/*COOKIES*/null,'application/xml'))){
             return array();
         }
         
