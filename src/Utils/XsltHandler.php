@@ -172,7 +172,7 @@ class XsltHandler{
         
         $options = array(
             CURLOPT_POST            => true,
-            CURLOPT_URL             => $uri,
+            CURLOPT_URL             => $url,
             CURLOPT_FOLLOWLOCATION  => true,
             CURLOPT_RETURNTRANSFER  => true,
             CURLOPT_USERAGENT       => $this->userAgent(),
