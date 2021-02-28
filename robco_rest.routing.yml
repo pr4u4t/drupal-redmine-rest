@@ -13,7 +13,7 @@ robco_rest.command:
 robco_rest.page:
   path: '/robco_rest/state/{command}/{arg1}/{arg2}/{arg3}/{arg4}'
   defaults:
-    _controller: '\Drupal\robco_rest\Controller\RobcoRest::command'
+    _controller: '\Drupal\robco_rest\Controller\RobcoRestController::command'
     arg1: null
     arg2: null
     arg3: null
