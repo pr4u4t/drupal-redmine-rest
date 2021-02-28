@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 class RobcoRestController extends ControllerBase {
   
   
-  public function command($command, Request $request, $arg1, $arg2, $arg3, $arg4) {
+  public function command($command, Request $request, $arg1 = null, $arg2 = null, $arg3 = null, $arg4 = null) {
     
     $args = array(
         $arg1,
