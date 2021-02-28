@@ -166,7 +166,7 @@ class XsltHandler{
 	protected function postRequest($url, $data, $cookiesIn = '',$content_type = ''){
         $header = array(
             "Content-type: ".$content_type,
-            "Content-length: " . strlen($xml),
+            "Content-length: " . strlen($data),
             "Connection: close"
         );
         
